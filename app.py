@@ -176,8 +176,8 @@ def history():
     username = session['username']
     if request.method == 'GET':
         user_histories = query_db(
-            'select * from history where username = ? order by schedule_time desc',
-            [username],
+            'select * from history where status != ? and username = ? order by schedule_time desc',
+            ['deleted', username],
             one=False
         )
         items = []
@@ -200,10 +200,10 @@ def history():
         if username != form_username:
             return '403 Forbidden', 403
         delete_list = request.form.getlist('history')
-        query = 'delete from history where username = ? and ('
+        query = 'update history set status = ? where username = ? and ('
         query += ' or '.join(['id = ?'] * len(delete_list))
         query += ')'
-        modify_db(query, [username] + delete_list)
+        modify_db(query, ['deleted', username] + delete_list)
         return redirect(url_for('history'))
 
 
