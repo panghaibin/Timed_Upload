@@ -43,7 +43,19 @@ def get_user_info(username):
         return rv[0]
 
 
-def cron_task():
+def get_user_config(username, config_names):
+    config = {}
+    with sqlite3.connect(DATABASE) as db:
+        for config_name in config_names:
+            query = "SELECT * FROM config WHERE username = ? and config_name = ?"
+            cur = db.cursor().execute(query, (username, config_name))
+            rv = [dict((cur.description[idx][0], value)
+                       for idx, value in enumerate(row)) for row in cur.fetchall()]
+            config[config_name] = rv[0]['config_value']
+    return config
+
+
+def job():
     pending = get_history(status='pending')
     for task in pending:
         if task['schedule_time'] > time.time():
@@ -66,4 +78,14 @@ def cron_task():
         )
         status, result = ag.upload()
         set_history(task['id'], status)
-        logging.info(result)
+        status_map = {
+            'success': '上传成功',
+            'fail': '上传失败',
+            'uploaded': '已上传过',
+        }
+        title = f'Ag第{test_times}次{status_map[status]}'
+        user_config = get_user_config(username, ['api_type', 'api_key'])
+        api_type = int(user_config['api_type'])
+        api_key = user_config['api_key']
+        send_result = send_msg(title, result, api_type, api_key)
+        logging.info('消息发送成功') if send_result else logging.info('消息发送失败')

@@ -361,3 +361,61 @@ class AgUpload:
         logging.info(title)
         os.remove(self.img_cps_path)
         return return_
+
+
+def send_msg(title, desp, api, key):
+    text = ''
+    title += '，下次不要忘记填报哦~'
+    try:
+        if api == 1:
+            url = "http://sctapi.ftqq.com/%s.send" % key
+            data = {
+                'text': title,
+                'desp': desp,
+            }
+            text = requests.post(url, data=data).text
+            result = json.loads(text)
+            return result['code'] == 0
+        elif api == 2:
+            print('该消息推送接口已弃用，请更换其它接口')
+            return False
+        elif api == 3:
+            tg_bot_key, tg_chat_id = key.split('@')
+            url = 'https://api.telegram.org/bot%s/sendMessage' % tg_bot_key
+            data = {
+                'chat_id': tg_chat_id,
+                'text': title + '\n' + desp,
+            }
+            text = requests.post(url, data=data).text
+            result = json.loads(text)
+            return result['ok']
+        elif api == 4:
+            url = 'https://api2.pushdeer.com/message/push'
+            data = {
+                "pushkey": key,
+                "text": title,
+                "desp": desp,
+            }
+            text = requests.post(url, data=data).text
+            result = json.loads(text)
+            return result['code'] == 0
+        elif api == 5:
+            url = "http://www.pushplus.plus/send"
+            data = {
+                'token': key,
+                'title': title,
+                'content': desp,
+                'template': 'markdown'
+            }
+            headers = {'Content-Type': 'application/json'}
+            body = json.dumps(data).encode(encoding='utf-8')
+            text = requests.post(url, data=body, headers=headers).text
+            result = json.loads(text)
+            return result['code'] == 200
+        else:
+            return False
+
+    except Exception as e:
+        print(text)
+        print(e)
+        return False
