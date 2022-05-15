@@ -17,3 +17,10 @@ create table if not exists history (
   test_img_path text not null,
   test_rimg_name text not null
 );
+
+create table if not exists config (
+  id integer primary key autoincrement,
+  username text not null,
+  config_name text not null,
+  config_value text not null
+);
