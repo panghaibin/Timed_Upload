@@ -51,6 +51,8 @@ def get_user_config(username, config_names):
             cur = db.cursor().execute(query, (username, config_name))
             rv = [dict((cur.description[idx][0], value)
                        for idx, value in enumerate(row)) for row in cur.fetchall()]
+            if not rv[0]:
+                return None
             config[config_name] = rv[0]['config_value']
     return config
 
@@ -80,6 +82,8 @@ def job():
         set_history(task['id'], status)
         title = f'Ag第{test_times}次{status_map[status]}'
         user_config = get_user_config(username, ['api_type', 'api_key'])
+        if not user_config:
+            user_config = get_user_config('admin', ['api_type', 'api_key'])
         api_type = int(user_config['api_type'])
         api_key = user_config['api_key']
         send_result = send_msg(title, result, api_type, api_key)
