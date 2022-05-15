@@ -84,6 +84,12 @@ def index():
     return redirect(url_for('antigen'))
 
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -161,12 +167,13 @@ def antigen_form():
         [username, test_timestamp, test_type, test_method, test_times, test_result,
          test_img_path, test_rimg_name, 'pending']
     )
-    return render_template(
-        'antigen-form.html',
-        msg=Markup('''信息提交成功！<a href="/antigen">返回</a><br><br><br>
-        <a href="/history">查看所有记录</a><br><br><br>
-        ''')
-    )
+    return redirect(url_for('history'))
+    # return render_template(
+    #     'antigen-form.html',
+    #     msg=Markup('''信息提交成功！<a href="/antigen">返回</a><br><br><br>
+    #     <a href="/history">查看所有记录</a><br><br><br>
+    #     ''')
+    # )
 
 
 @app.route('/history', methods=['GET', 'POST'])
