@@ -169,29 +169,31 @@ def antigen_form():
     )
 
 
-@app.route('/history')
+@app.route('/history', methods=['GET', 'POST'])
 def history():
     if 'username' not in session:
         return redirect(url_for('login'))
     username = session['username']
-    user_histories = query_db(
-        'select * from history where username = ? order by schedule_time desc',
-        [username],
-        one=False
-    )
-    items = []
-    for user_history in user_histories:
-        item = {
-            'status': status_map[user_history.get('status')],
-            'time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%Y-%m-%d %H:%M'),
-            'type': user_history.get('test_type'),
-            'method': user_history.get('test_method'),
-            'times': user_history.get('test_times'),
-            'result': user_history.get('test_result'),
-            'img': './img/%s/%s' % (username, user_history.get('test_img_path').replace('\\', '/').split('/')[-1]),
-        }
-        items.append(item)
-    return render_template('history.html', username=username, items=items)
+    if request.method == 'GET':
+        user_histories = query_db(
+            'select * from history where username = ? order by schedule_time desc',
+            [username],
+            one=False
+        )
+        items = []
+        for user_history in user_histories:
+            item = {
+                'id': user_history.get('id'),
+                'status': status_map[user_history.get('status')],
+                'time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%Y-%m-%d %H:%M'),
+                'type': user_history.get('test_type'),
+                'method': user_history.get('test_method'),
+                'times': user_history.get('test_times'),
+                'result': user_history.get('test_result'),
+                'img': './img/%s/%s' % (username, user_history.get('test_img_path').replace('\\', '/').split('/')[-1]),
+            }
+            items.append(item)
+        return render_template('history.html', username=username, items=items)
 
 
 @app.route('/img/<username>/<img_name>')
