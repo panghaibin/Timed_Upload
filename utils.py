@@ -218,10 +218,6 @@ class AgUpload:
 
     def _login(self):
         self.session = login(self.username, self.password)
-        if not self.session:
-            logging.error(f'登录失败，用户名：{self.username}')
-            return False
-        return True
 
     def _read_notice(self, notice_url):
         notice_html = self.session.get(url=notice_url).text
@@ -298,7 +294,7 @@ class AgUpload:
 
     def upload(self):
         now = self.t.strftime('%Y-%m-%d %H:%M:%S')
-        if self.session is None:
+        if not self.session:
             title = f'{self.id_num}登录失败'
             logging.error(title)
             return 'fail', f'{now}\n\n{title}'
