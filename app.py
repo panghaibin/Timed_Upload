@@ -60,7 +60,7 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
-def insert_db(insert, args=()):
+def modify_db(insert, args=()):
     g.db.execute(insert, args)
     g.db.commit()
 
@@ -152,7 +152,7 @@ def antigen_form():
     test_rimg_name = test_img.filename
     test_img_path = os.path.join(test_img_path, f'{int(time.time() * 1000)}.jpg')
     test_img.save(test_img_path)
-    insert_db(
+    modify_db(
         'insert into history '
         '(username, schedule_time, test_type, test_method, test_times, test_result, '
         'test_img_path, test_rimg_name, status)'
@@ -194,6 +194,17 @@ def history():
             }
             items.append(item)
         return render_template('history.html', username=username, items=items)
+    if request.method == 'POST':
+        username = session['username']
+        form_username = request.form.get('username')
+        if username != form_username:
+            return '403 Forbidden', 403
+        delete_list = request.form.getlist('history')
+        query = 'delete from history where username = ? and ('
+        query += ' or '.join(['id = ?'] * len(delete_list))
+        query += ')'
+        modify_db(query, [username] + delete_list)
+        return redirect(url_for('history'))
 
 
 @app.route('/img/<username>/<img_name>')
