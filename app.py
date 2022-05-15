@@ -90,6 +90,7 @@ def antigen():
     username = session['username']
     name = query_db('select name from users where username = ?', [username], one=True).get('name')
     t = get_time()
+    t += timedelta(minutes=2)
     t += timedelta(days=1) if t.hour >= 22 else timedelta()
     form_date = t.strftime('%Y-%m-%d')
     form_time = t.strftime('07:%M') if t.hour >= 22 or t.hour <= 5 else t.strftime('%H:%M')
