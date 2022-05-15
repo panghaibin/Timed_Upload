@@ -15,7 +15,7 @@ class Config(object):
             'id': 'job1',
             'func': 'cron:job',
             'trigger': 'interval',
-            'minutes': 1
+            'minutes': 5
         }
     ]
     SCHEDULER_API_ENABLED = True
