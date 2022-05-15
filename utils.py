@@ -200,6 +200,7 @@ class AgUpload:
 
         self.img_path = img_path
         self.img_name = img_name
+        self.img_cps_path = None
         self.img = None
 
         self.view_state = None
@@ -294,11 +295,12 @@ class AgUpload:
         }
 
     def _get_img_file(self):
-        img_path = compress_img(self.img_path)
-        self.img = open(img_path, 'rb')
+        img_cps_path = compress_img(self.img_path)
+        self.img = open(img_cps_path, 'rb')
         self.file_form = {
             'p1$P_Upload$FileHeSJCBG': (self.img_name, self.img, 'image/jpeg', {'Content-Type': 'image/jpeg'}),
         }
+        self.img_cps_path = img_cps_path
 
     def upload(self):
         now = self.t.strftime('%Y-%m-%d %H:%M:%S')
@@ -335,7 +337,7 @@ class AgUpload:
                 result_list.append(result_split)
             self._get_report_form()
             self.img.close()
-            os.remove(self.img_path)
+            os.remove(self.img_cps_path)
             self._get_img_file()
 
         self.img.close()
@@ -356,5 +358,5 @@ class AgUpload:
             result_str = '\n\n'.join(result_list)
             return_ = 'fail', f'{now}\n\n{title}\n\n{result_str}'
         logging.info(title)
-        os.remove(self.img_path)
+        os.remove(self.img_cps_path)
         return return_
