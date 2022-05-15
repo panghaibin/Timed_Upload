@@ -10,11 +10,20 @@ import base64
 import requests
 import datetime
 import traceback
+
+import yaml
 from PIL import Image, ImageOps, ImageEnhance
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 abs_path = os.path.split(os.path.realpath(__file__))[0]
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+
+
+def get_config(config_file):
+    with open(os.path.join(abs_path, config_file), 'r', encoding='utf-8') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    return config
 
 
 def get_time():

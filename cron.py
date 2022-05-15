@@ -1,12 +1,16 @@
+import os
 import time
+import sqlite3
 import logging
-from utils import AgUpload
-from app import get_connection, app
+from utils import AgUpload, get_config, abs_path
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+config = get_config('config.yml')
+DATABASE = os.path.join(abs_path, config['DATABASE'])
 
 
 def get_history(id_=None, username=None, status=None):
-    with app.app_context():
-        db = get_connection()
+    with sqlite3.connect(DATABASE) as db:
         if id_:
             query = "SELECT * FROM history WHERE id = ?"
             cur = db.cursor().execute(query, (id_,))
@@ -24,16 +28,14 @@ def get_history(id_=None, username=None, status=None):
 
 
 def set_history(id_, status):
-    with app.app_context():
-        db = get_connection()
+    with sqlite3.connect(DATABASE) as db:
         query = "UPDATE history SET status = ? WHERE id = ?"
         db.cursor().execute(query, (status, id_))
         db.commit()
 
 
 def get_user_info(username):
-    with app.app_context():
-        db = get_connection()
+    with sqlite3.connect(DATABASE) as db:
         query = "SELECT * FROM users WHERE username = ?"
         cur = db.cursor().execute(query, (username,))
         rv = [dict((cur.description[idx][0], value)

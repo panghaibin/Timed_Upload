@@ -1,22 +1,21 @@
 import os
-import yaml
 import time
 import sqlite3
 from datetime import datetime
 from datetime import timedelta
 from contextlib import closing
-from utils import abs_path, get_time
 from flask_apscheduler import APScheduler
+from utils import abs_path, get_time, get_config
 from flask import Flask, render_template, request, session, redirect, url_for, g, Markup
 
 
-class CronConfig:
+class Config(object):
     JOBS = [
         {
             'id': 'job1',
             'func': 'cron:cron_task',
             'trigger': 'interval',
-            'seconds': 10
+            'seconds': 2
         }
     ]
     SCHEDULER_API_ENABLED = True
@@ -24,9 +23,12 @@ class CronConfig:
 
 app = Flask(__name__)
 aps = APScheduler()
+app.config.from_object(Config())
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
-with open('config.yml', 'r', encoding='utf-8') as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
+config = get_config('config.yml')
 DATABASE = os.path.join(abs_path, config['DATABASE'])
 UPLOAD_FOLDER = os.path.join(abs_path, config['UPLOAD_FOLDER'])
 app.secret_key = config['SECRET_KEY']
@@ -166,8 +168,4 @@ def history():
 
 
 if __name__ == '__main__':
-    app.config.from_object(CronConfig())
-    scheduler = APScheduler()
-    scheduler.init_app(app)
-    scheduler.start()
     app.run(debug=True)
