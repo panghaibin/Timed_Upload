@@ -191,9 +191,10 @@ def compress_img(img_path, transform=False):
 
 
 class AgUpload:
-    def __init__(self, username, password, test_type, test_method, test_times, test_result, img_path, img_name):
+    def __init__(self, username, password, name, test_type, test_method, test_times, test_result, img_path, img_name):
         self.username = username
         self.password = password
+        self.name = name
         self.session = None
         self._login()
         self.id_num = username
@@ -252,17 +253,10 @@ class AgUpload:
         test_date = t.strftime('%Y-%m-%d %H:%M')
         self.test_check = f'当天第{self.test_times}次({t.year}/{t.month}/{t.day}'
 
-        name = ""
-        ag_line = html2JsLine(ag_html)
-        for i, line in enumerate(ag_line):
-            if 'p1_XingMing' in line:
-                name = jsLine2Json(ag_line[i - 1])['Text']
-                break
-
         ag_b64str = 'eyJwMV9Hb25nSGFvIjogeyJUZXh0IjogIiJ9LCAicDFfWGluZ01pbmciOiB7IlRleHQiOiAiIn0sICJwMV9QX1VwbG9hZF9DaGVuZ051byI6IHsiQ2hlY2tlZCI6IHRydWV9LCAicDFfUF9VcGxvYWRfY3RsMDAiOiB7IklGcmFtZUF0dHJpYnV0ZXMiOiB7fX0sICJwMV9QX1VwbG9hZF9TaGVuVFpLIjogeyJGX0l0ZW1zIjogW1si5ZCmIiwgIjxzcGFuIHN0eWxlPSdjb2xvcjpncmVlbic+5peg5Lul5LiK55eH54q2KE5vKTwvc3Bhbj4iLCAxXSwgWyLmmK8iLCAiPHNwYW4gc3R5bGU9J2NvbG9yOnJlZCc+5pyJ5Lul5LiK55eH54q25LmL5LiAKFllcyk8L3NwYW4+IiwgMV1dLCAiU2VsZWN0ZWRWYWx1ZSI6ICLlkKYifSwgInAxX1BfVXBsb2FkX0ppYW5DTFgiOiB7IkZfSXRlbXMiOiBbWyLmipfljp8iLCAiPHNwYW4gc3R5bGU9J2ZvbnQtd2VpZ2h0OmJvbGRlcjsnPuaKl+WOnyhBbnRpZ2VuIFRlc3QpPC9zcGFuPiIsIDFdLCBbIuaguOmFuCIsICLmoLjphbgoTnVjbGVpYyBBY2lkIFRlc3QpIiwgMV1dLCAiU2VsZWN0ZWRWYWx1ZSI6ICLmipfljp8ifSwgInAxX1BfVXBsb2FkX0NhaVlGUyI6IHsiRl9JdGVtcyI6IFtbIum8u+iFlOaLreWtkCIsICLpvLvohZTmi63lrZAoTm9zZSkiLCAxXSwgWyLpvLvlkr3mi63lrZAiLCAi6by75ZK95out5a2QKE5vc2UrVGhyb2F0KSIsIDFdLCBbIuWPo+iFlOaLreWtkCIsICLlj6PohZTmi63lrZAoVGhyb2F0KSIsIDFdXSwgIlNlbGVjdGVkVmFsdWUiOiAi6by76IWU5out5a2QIn0sICJwMV9QX1VwbG9hZF9IZVNKQ1JRIjogeyJUZXh0IjogIiJ9LCAicDFfUF9VcGxvYWRfQ2lTaHUiOiB7IkZfSXRlbXMiOiBbWyIxIiwgIuesrDHmrKEoRmlyc3QpIiwgMV0sIFsiMiIsICLnrKwy5qyhKFNlY29uZCkiLCAxXSwgWyIzIiwgIuesrDPmrKEoVGhpcmQpIiwgMV1dLCAiU2VsZWN0ZWRWYWx1ZSI6ICIxIn0sICJwMV9QX1VwbG9hZF9KaWFuQ0pHIjogeyJGX0l0ZW1zIjogW1si6Zi05oCnIiwgIjxzcGFuIHN0eWxlPSdjb2xvcjpncmVlbic+6Zi05oCnKE5lZ2F0aXZlKTwvc3Bhbj4iLCAxXSwgWyLpmLPmgKciLCAiPHNwYW4gc3R5bGU9J2NvbG9yOnJlZCc+6Ziz5oCnKFBvc2l0aXZlKTwvc3Bhbj4iLCAxXSwgWyLml6DmlYgiLCAi5peg5pWIKEludmFsaWQpIiwgMV0sIFsi5pqC5peg57uT5p6cIiwgIuaaguaXoOe7k+aenChObyBSZXN1bHQpIiwgMV1dLCAiU2VsZWN0ZWRWYWx1ZSI6ICLpmLTmgKcifSwgInAxX1BfVXBsb2FkIjogeyJJRnJhbWVBdHRyaWJ1dGVzIjoge319LCAicDFfR3JpZERhdGEiOiB7IlJlY29yZENvdW50IjogMCwgIkZfUm93cyI6IFtdLCAiSUZyYW1lQXR0cmlidXRlcyI6IHt9fSwgInAxIjogeyJJRnJhbWVBdHRyaWJ1dGVzIjoge319LCAiV19TaG93UGljIjogeyJJRnJhbWVBdHRyaWJ1dGVzIjoge319fQ=='
         ag_json = json.loads(base64.b64decode(ag_b64str).decode('utf-8'))
         ag_json['p1_GongHao']['Text'] = self.id_num
-        ag_json['p1_XingMing']['Text'] = name
+        ag_json['p1_XingMing']['Text'] = self.name
         ag_json['p1_P_Upload_HeSJCRQ']['Text'] = test_date
         ag_json['p1_P_Upload_CiShu']['SelectedValue'] = self.test_times
         ag_json['p1_P_Upload_JianCLX']['SelectedValue'] = self.test_type
