@@ -14,6 +14,7 @@
         <th>类型</th>
         <th>方式</th>
         <th>结果</th>
+        <th>查看图片</th>
     </tr>
     {% for item in items %}
     <tr>
@@ -23,6 +24,7 @@
         <td>{{ item.type }}</td>
         <td>{{ item.method }}</td>
         <td>{{ item.result }}</td>
+        <td><a target="_blank" href="{{ item.img }}">查看</a></td>
     </tr>
     {% endfor %}
 </table>

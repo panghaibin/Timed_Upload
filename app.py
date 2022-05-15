@@ -6,7 +6,7 @@ from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
 from utils import abs_path, get_time, get_config, status_map
-from flask import Flask, render_template, request, session, redirect, url_for, g, Markup
+from flask import Flask, render_template, request, session, redirect, url_for, g, Markup, send_from_directory
 
 
 class Config(object):
@@ -162,7 +162,10 @@ def antigen_form():
     )
     return render_template(
         'antigen-form.html',
-        msg=Markup('信息提交成功，<a href="/history">查看所有记录</a>')
+        msg=Markup('''信息提交成功！<br>
+        <a href="/history">查看所有记录</a><br>
+        <a href="/antigen">返回填报页面</a><br>
+        ''')
     )
 
 
@@ -185,9 +188,15 @@ def history():
             'method': user_history.get('test_method'),
             'times': user_history.get('test_times'),
             'result': user_history.get('test_result'),
+            'img': './img/%s/%s' % (username, user_history.get('test_img_path').replace('\\', '/').split('/')[-1]),
         }
         items.append(item)
     return render_template('history.html', username=username, items=items)
+
+
+@app.route('/img/<username>/<img_name>')
+def img(username, img_name):
+    return send_from_directory(os.path.join(UPLOAD_FOLDER, username), img_name)
 
 
 if __name__ == '__main__':
