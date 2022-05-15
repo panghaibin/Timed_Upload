@@ -163,9 +163,8 @@ def antigen_form():
     )
     return render_template(
         'antigen-form.html',
-        msg=Markup('''信息提交成功！<br>
-        <a href="/history">查看所有记录</a><br>
-        <a href="/antigen">返回填报页面</a><br>
+        msg=Markup('''信息提交成功！<a href="/antigen">返回</a><br><br><br>
+        <a href="/history">查看所有记录</a><br><br><br>
         ''')
     )
 

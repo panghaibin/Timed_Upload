@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta content="width=device-width,user-scalable=no" name="viewport">
     <title>{{ username }}的计划任务记录</title>
 </head>
 <body>
@@ -10,7 +11,7 @@
 <form action="" method="post">
 {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
 <input type="hidden" name="username" value="{{ username }}">
-<table border="1">
+<table border="1" style="border: 1px solid black">
     <tr>
         <th>选择</th>
         <th>当前状态</th>
