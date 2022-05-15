@@ -13,9 +13,9 @@ class Config(object):
     JOBS = [
         {
             'id': 'job1',
-            'func': 'cron:cron_task',
+            'func': 'cron:job',
             'trigger': 'interval',
-            'seconds': 2
+            'seconds': 10
         }
     ]
     SCHEDULER_API_ENABLED = True
@@ -28,10 +28,10 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-config = get_config('config.yml')
-DATABASE = os.path.join(abs_path, config['DATABASE'])
-UPLOAD_FOLDER = os.path.join(abs_path, config['UPLOAD_FOLDER'])
-app.secret_key = config['SECRET_KEY']
+app_config = get_config('config.yml')
+DATABASE = os.path.join(abs_path, app_config['DATABASE'])
+UPLOAD_FOLDER = os.path.join(abs_path, app_config['UPLOAD_FOLDER'])
+app.secret_key = app_config['SECRET_KEY']
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 

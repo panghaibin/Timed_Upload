@@ -2,11 +2,11 @@ import os
 import time
 import sqlite3
 import logging
-from utils import AgUpload, get_config, abs_path
+from utils import AgUpload, get_config, abs_path, send_msg
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-config = get_config('config.yml')
-DATABASE = os.path.join(abs_path, config['DATABASE'])
+app_config = get_config('config.yml')
+DATABASE = os.path.join(abs_path, app_config['DATABASE'])
 
 
 def get_history(id_=None, username=None, status=None):
