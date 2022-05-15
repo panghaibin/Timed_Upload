@@ -43,6 +43,11 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
+def insert_db(insert, args=()):
+    g.db.execute(insert, args)
+    g.db.commit()
+
+
 @app.before_request
 def before_request():
     g.db = connect_db()
@@ -52,7 +57,6 @@ def before_request():
 @app.teardown_request
 def teardown_request(exception):
     if hasattr(g, 'db'):
-        g.db.commit()
         g.db.close()
 
 
@@ -126,7 +130,7 @@ def antigen_form():
     test_rimg_name = test_img.filename
     test_img_path = os.path.join(test_img_path, f'{int(time.time() * 1000)}.jpg')
     test_img.save(test_img_path)
-    query_db(
+    insert_db(
         'insert into history '
         '(username, schedule_time, test_type, test_method, test_times, test_result, test_img_path, test_rimg_name)'
         'values (?, ?, ?, ?, ?, ?, ?, ?)',
