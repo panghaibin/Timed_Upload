@@ -160,6 +160,7 @@ def jsLine2Json(js):
 def compress_img(img_path, transform=False):
     cur_img = Image.open(img_path)
     cur_img = ImageOps.exif_transpose(cur_img)
+    cur_img = cur_img.convert('RGB')
 
     if transform:
         raw_width, raw_height = cur_img.size
@@ -189,7 +190,10 @@ def compress_img(img_path, transform=False):
         cur_img = col_enhancer.enhance(random.randint(9, 11) / 10)
 
     cps_time = get_time().strftime('%M%S%f')
-    new_img_path = img_path.replace('.jpg', f'_{cps_time}_compress.jpg')
+    img_path_list = img_path.split('.')
+    img_path_list[-2] += f'_{cps_time}_'
+    img_path_list.append('jpg')
+    new_img_path = '.'.join(img_path_list)
     target_size = 3 * 1024 * 1024
     quality = 90
     step = 5

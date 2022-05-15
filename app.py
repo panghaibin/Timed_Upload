@@ -15,7 +15,7 @@ class Config(object):
             'id': 'job1',
             'func': 'cron:job',
             'trigger': 'interval',
-            'minutes': 3
+            'minutes': 1
         }
     ]
     SCHEDULER_API_ENABLED = True
@@ -107,7 +107,7 @@ def antigen():
     username = session['username']
     name = query_db('select name from users where username = ?', [username], one=True).get('name')
     t = get_time()
-    t += timedelta(minutes=5)
+    t += timedelta(minutes=1)
     t += timedelta(days=1) if t.hour >= 22 else timedelta()
     form_date = t.strftime('%Y-%m-%d')
     form_time = t.strftime('07:%M') if t.hour >= 22 or t.hour <= 5 else t.strftime('%H:%M')
@@ -144,13 +144,14 @@ def antigen_form():
     test_timestamp = time.mktime(test_date_time.timetuple())
     now_timestamp = time.time()
     if (test_timestamp - now_timestamp) < 3 * 60:
-        test_date_time += timedelta(minutes=4)
         test_timestamp = time.mktime(test_date_time.timetuple())
     test_img_path = os.path.join(UPLOAD_FOLDER, username)
     if not os.path.exists(test_img_path):
         os.mkdir(test_img_path)
     test_rimg_name = test_img.filename
-    test_img_path = os.path.join(test_img_path, f'{int(time.time() * 1000)}.jpg')
+    _ = test_rimg_name.split('.')
+    _[-2] = str(int(time.time() * 1000))
+    test_img_path = os.path.join(test_img_path, '.'.join(_))
     test_img.save(test_img_path)
     modify_db(
         'insert into history '
