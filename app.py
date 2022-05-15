@@ -15,7 +15,7 @@ class Config(object):
             'id': 'job1',
             'func': 'cron:job',
             'trigger': 'interval',
-            'seconds': 10
+            'minutes': 3
         }
     ]
     SCHEDULER_API_ENABLED = True
@@ -107,7 +107,7 @@ def antigen():
     username = session['username']
     name = query_db('select name from users where username = ?', [username], one=True).get('name')
     t = get_time()
-    t += timedelta(minutes=2)
+    t += timedelta(minutes=5)
     t += timedelta(days=1) if t.hour >= 22 else timedelta()
     form_date = t.strftime('%Y-%m-%d')
     form_time = t.strftime('07:%M') if t.hour >= 22 or t.hour <= 5 else t.strftime('%H:%M')
@@ -142,6 +142,10 @@ def antigen_form():
         return render_template('antigen-form.html', msg=Markup('请填写完整信息，<a href="/antigen">点击返回</a>'))
     test_date_time = datetime.strptime(test_date + ' ' + test_time, '%Y-%m-%d %H:%M')
     test_timestamp = time.mktime(test_date_time.timetuple())
+    now_timestamp = time.time()
+    if (test_timestamp - now_timestamp) < 3 * 60:
+        test_date_time += timedelta(minutes=4)
+        test_timestamp = time.mktime(test_date_time.timetuple())
     test_img_path = os.path.join(UPLOAD_FOLDER, username)
     if not os.path.exists(test_img_path):
         os.mkdir(test_img_path)
@@ -170,4 +174,4 @@ def history():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

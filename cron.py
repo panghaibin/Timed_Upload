@@ -57,7 +57,7 @@ def get_user_config(username, config_names):
 
 def job():
     pending = get_history(status='pending')
-    for task in pending:
+    for i, task in enumerate(pending):
         if task['schedule_time'] > time.time():
             continue
         set_history(task['id'], 'running')
@@ -89,3 +89,5 @@ def job():
         api_key = user_config['api_key']
         send_result = send_msg(title, result, api_type, api_key)
         logging.info('消息发送成功') if send_result else logging.info('消息发送失败')
+        if i < len(pending) - 1:
+            time.sleep(5 * 60)
