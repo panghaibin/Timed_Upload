@@ -5,7 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
-from utils import abs_path, get_time, get_config
+from utils import abs_path, get_time, get_config, status_map
 from flask import Flask, render_template, request, session, redirect, url_for, g, Markup
 
 
@@ -170,7 +170,24 @@ def antigen_form():
 def history():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return 'history'
+    username = session['username']
+    user_histories = query_db(
+        'select * from history where username = ? order by schedule_time desc',
+        [username],
+        one=False
+    )
+    items = []
+    for user_history in user_histories:
+        item = {
+            'status': status_map[user_history.get('status')],
+            'time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%Y-%m-%d %H:%M'),
+            'type': user_history.get('test_type'),
+            'method': user_history.get('test_method'),
+            'times': user_history.get('test_times'),
+            'result': user_history.get('test_result'),
+        }
+        items.append(item)
+    return render_template('history.html', username=username, items=items)
 
 
 if __name__ == '__main__':

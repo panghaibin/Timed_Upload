@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>{{ username }}的计划任务记录</p>
+<table border="1">
+    <tr>
+        <th>当前状态</th>
+        <th>计划时间</th>
+        <th>次数</th>
+        <th>类型</th>
+        <th>方式</th>
+        <th>结果</th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td>{{ item.status }}</td>
+        <td>{{ item.time }}</td>
+        <td>{{ item.times }}</td>
+        <td>{{ item.type }}</td>
+        <td>{{ item.method }}</td>
+        <td>{{ item.result }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

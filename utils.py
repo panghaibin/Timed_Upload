@@ -3,6 +3,7 @@ import os
 import re
 import rsa
 import json
+import yaml
 import time
 import math
 import random
@@ -10,14 +11,19 @@ import base64
 import requests
 import datetime
 import traceback
-
-import yaml
 from PIL import Image, ImageOps, ImageEnhance
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 abs_path = os.path.split(os.path.realpath(__file__))[0]
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+status_map = {
+    'pending': '等待上传',
+    'running': '上传中',
+    'success': '上传成功',
+    'fail': '上传失败',
+    'uploaded': '已上传过',
+}
 
 
 def get_config(config_file):

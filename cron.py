@@ -2,7 +2,7 @@ import os
 import time
 import sqlite3
 import logging
-from utils import AgUpload, get_config, abs_path, send_msg
+from utils import AgUpload, get_config, abs_path, send_msg, status_map
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 app_config = get_config('config.yml')
@@ -78,11 +78,6 @@ def job():
         )
         status, result = ag.upload()
         set_history(task['id'], status)
-        status_map = {
-            'success': '上传成功',
-            'fail': '上传失败',
-            'uploaded': '已上传过',
-        }
         title = f'Ag第{test_times}次{status_map[status]}'
         user_config = get_user_config(username, ['api_type', 'api_key'])
         api_type = int(user_config['api_type'])
