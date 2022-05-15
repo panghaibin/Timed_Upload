@@ -182,6 +182,13 @@ def history():
         return redirect(url_for('login'))
     username = session['username']
     if request.method == 'GET':
+        status_color_map = {
+            'pending': '#ffc107',
+            'running': '#ffc107',
+            'success': '#28a745',
+            'fail': '#dc3545',
+            'uploaded': '#007bff',
+        }
         user_histories = query_db(
             'select * from history where status != ? and username = ? order by schedule_time desc',
             ['deleted', username],
@@ -189,9 +196,10 @@ def history():
         )
         items = []
         for user_history in user_histories:
+            status = user_history.get('status')
             item = {
                 'id': user_history.get('id'),
-                'status': status_map[user_history.get('status')],
+                'status': Markup('<span style="color: %s">%s</span>' % (status_color_map[status], status_map[status])),
                 'time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%Y-%m-%d %H:%M'),
                 'type': user_history.get('test_type'),
                 'method': user_history.get('test_method'),
