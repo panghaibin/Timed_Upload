@@ -1,3 +1,6 @@
+import time
+import logging
+from utils import AgUpload
 from app import get_connection, app
 
 
@@ -18,3 +21,47 @@ def get_history(id_=None, username=None, status=None):
         rv = [dict((cur.description[idx][0], value)
                    for idx, value in enumerate(row)) for row in cur.fetchall()]
         return rv
+
+
+def set_history(id_, status):
+    with app.app_context():
+        db = get_connection()
+        query = "UPDATE history SET status = ? WHERE id = ?"
+        db.cursor().execute(query, (status, id_))
+        db.commit()
+
+
+def get_user_info(username):
+    with app.app_context():
+        db = get_connection()
+        query = "SELECT * FROM users WHERE username = ?"
+        cur = db.cursor().execute(query, (username,))
+        rv = [dict((cur.description[idx][0], value)
+                   for idx, value in enumerate(row)) for row in cur.fetchall()]
+        return rv[0]
+
+
+def cron_task():
+    pending = get_history(status='pending')
+    for task in pending:
+        if task['schedule_time'] > time.time():
+            continue
+        set_history(task['id'], 'running')
+        username = task['username']
+        test_type = task['test_type']
+        test_method = task['test_method']
+        test_times = task['test_times']
+        test_result = task['test_result']
+        test_img_path = task['test_img_path']
+        test_rimg_name = task['test_rimg_name']
+
+        user_info = get_user_info(username)
+        password = user_info['password']
+        name = user_info['name']
+
+        ag = AgUpload(
+            username, password, name, test_type, test_method, test_times, test_result, test_img_path, test_rimg_name
+        )
+        status, result = ag.upload()
+        set_history(task['id'], status)
+        logging.info(result)
