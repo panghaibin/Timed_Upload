@@ -150,9 +150,11 @@ def antigen_form():
     test_img.save(test_img_path)
     insert_db(
         'insert into history '
-        '(username, schedule_time, test_type, test_method, test_times, test_result, test_img_path, test_rimg_name)'
-        'values (?, ?, ?, ?, ?, ?, ?, ?)',
-        [username, test_timestamp, test_type, test_method, test_times, test_result, test_img_path, test_rimg_name]
+        '(username, schedule_time, test_type, test_method, test_times, test_result, '
+        'test_img_path, test_rimg_name, status)'
+        'values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [username, test_timestamp, test_type, test_method, test_times, test_result,
+         test_img_path, test_rimg_name, 'pending']
     )
     return render_template(
         'antigen-form.html',
