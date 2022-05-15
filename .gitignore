@@ -1,6 +1,7 @@
 # 项目文件
 config.yml
 database.db
+uploads
 # Pycharm
 .idea/
 # Byte-compiled / optimized / DLL files

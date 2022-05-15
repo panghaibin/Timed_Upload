@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="./antigen-form" method="post" enctype="multipart/form-data">
+    <p>学号：{{ username }}</p>
+    <p>姓名：{{ name }}</p>
+    <p><label>类型：</label>
+        <label>
+            <input type="radio" name="type" value="1" checked>
+        </label>
+        <label>抗原</label>
+        <label>
+            <input type="radio" name="type" value="2">
+        </label>
+        <label>核酸</label>
+    </p>
+    <p>
+        <label>方式：</label>
+        <label>
+            <input type="radio" name="method" value="1" checked>
+        </label>
+        <label>鼻腔</label>
+        <label>
+            <input type="radio" name="method" value="2">
+        </label>
+        <label>鼻咽</label>
+        <label>
+            <input type="radio" name="method" value="3">
+        </label>
+        <label>口腔</label>
+    </p>
+    <p>
+        <label>次数：</label>
+        <label>
+            <input type="radio" name="test_times" value="1" checked>
+        </label>
+        <label>第1次</label>
+        <label>
+            <input type="radio" name="test_times" value="2">
+        </label>
+        <label>第2次</label>
+    </p>
+    <p>
+        <label>计划：</label>
+        <label>
+            <input type="date" name="date" value="{{ date }}">
+            <input type="time" name="time" value="{{ time }}">
+        </label>
+    </p>
+    <p>
+        <label>结果：</label>
+        <label>
+            <input type="radio" name="result" value="1" checked>
+        </label>
+        <label>阴性</label>
+        <label>
+            <input type="radio" name="result" value="2">
+        </label>
+        <label>阳性</label>
+    </p>
+    <p>
+        <label>图片：</label>
+        <label>
+            <input type="file" name="image" required>
+        </label>
+    </p>
+    <p>
+        <input type="submit" value="提交">
+    </p>
+</form>
+</body>
+</html>
