@@ -9,7 +9,7 @@ create table if not exists history (
   id integer primary key autoincrement,
   username text not null,
   schedule_time float not null,
-  status text not null default 'in_queue',
+  status text not null default 'pending',
   test_type text not null,
   test_method text not null,
   test_times text not null,
