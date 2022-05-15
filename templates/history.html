@@ -21,6 +21,9 @@
 <body>
 <a href="antigen">计划任务上传</a> | 计划任务记录 | <a href="logout">退出</a>
 <p>{{ username }}的计划任务记录</p>
+<button onclick="location.reload();">刷新</button>
+<br>
+<br>
 <form action="" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
@@ -53,7 +56,7 @@
         {% endfor %}
     </table>
     <br>
-    <input type="submit" value="删除">
+    <input type="submit" value="删除选中">
 </form>
 </body>
 </html>
