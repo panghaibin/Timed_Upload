@@ -2,13 +2,28 @@ import os
 import yaml
 import time
 import sqlite3
-from utils import abs_path, get_time
-from datetime import timedelta
 from datetime import datetime
+from datetime import timedelta
 from contextlib import closing
+from utils import abs_path, get_time
+from flask_apscheduler import APScheduler
 from flask import Flask, render_template, request, session, redirect, url_for, g, Markup
 
+
+class CronConfig:
+    JOBS = [
+        {
+            'id': 'job1',
+            'func': 'cron:cron_task',
+            'trigger': 'interval',
+            'seconds': 10
+        }
+    ]
+    SCHEDULER_API_ENABLED = True
+
+
 app = Flask(__name__)
+aps = APScheduler()
 
 with open('config.yml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
@@ -151,4 +166,8 @@ def history():
 
 
 if __name__ == '__main__':
+    app.config.from_object(CronConfig())
+    scheduler = APScheduler()
+    scheduler.init_app(app)
+    scheduler.start()
     app.run(debug=True)
