@@ -5,42 +5,51 @@
     <meta content="width=device-width,user-scalable=no" name="viewport">
     <title>{{ username }}的计划任务记录</title>
 </head>
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
 <body>
 <a href="antigen">计划任务上传</a> | 计划任务记录
 <p>{{ username }}的计划任务记录</p>
 <form action="" method="post">
-{#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
-<input type="hidden" name="username" value="{{ username }}">
-<table border="1" style="border: 1px solid black">
-    <tr>
-        <th>选择</th>
-        <th>当前状态</th>
-        <th>计划时间</th>
-        <th>次数</th>
-        <th>类型</th>
-        <th>方式</th>
-        <th>结果</th>
-        <th>查看图片</th>
-    </tr>
-    {% for item in items %}
-    <tr>
-        <td>
-            <label>
-                <input type="checkbox" name="history" value="{{ item.id }}">
-            </label>
-        </td>
-        <td>{{ item.status }}</td>
-        <td>{{ item.time }}</td>
-        <td>{{ item.times }}</td>
-        <td>{{ item.type }}</td>
-        <td>{{ item.method }}</td>
-        <td>{{ item.result }}</td>
-        <td><a target="_blank" href="{{ item.img }}">查看</a></td>
-    </tr>
-    {% endfor %}
-</table>
-<br>
-<input type="submit" value="删除">
+    {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
+    <input type="hidden" name="username" value="{{ username }}">
+    <table border="1" style="border: 1px solid black; width: 100%">
+        <tr>
+            <th>选择</th>
+            <th>当前状态</th>
+            <th>计划时间</th>
+            <th>次数</th>
+            <th>类型</th>
+            <th>方式</th>
+            <th>结果</th>
+            <th>查看图片</th>
+        </tr>
+        {% for item in items %}
+            <tr>
+                <td>
+                    <label>
+                        <input type="checkbox" name="history" value="{{ item.id }}">
+                    </label>
+                </td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.time }}</td>
+                <td>{{ item.times }}</td>
+                <td>{{ item.type }}</td>
+                <td>{{ item.method }}</td>
+                <td>{{ item.result }}</td>
+                <td><a target="_blank" href="{{ item.img }}">查看</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <input type="submit" value="删除">
 </form>
 </body>
 </html>
