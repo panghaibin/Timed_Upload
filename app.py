@@ -2,7 +2,7 @@ import os
 import yaml
 import time
 import sqlite3
-from utils import *
+from utils import abs_path, get_time
 from datetime import timedelta
 from datetime import datetime
 from contextlib import closing
