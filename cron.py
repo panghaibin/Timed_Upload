@@ -80,7 +80,7 @@ def job():
         )
         status, result = ag.upload()
         set_history(task['id'], status)
-        title = f'Ag第{test_times}次{status_map[status]}'
+        title = f'{username[-4:]}第{test_times}次{status_map[status]}'
         user_config = get_user_config(username, ['api_type', 'api_key'])
         if not user_config:
             user_config = get_user_config('admin', ['api_type', 'api_key'])
