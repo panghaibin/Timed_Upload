@@ -51,7 +51,7 @@ def get_user_config(username, config_names):
             cur = db.cursor().execute(query, (username, config_name))
             rv = [dict((cur.description[idx][0], value)
                        for idx, value in enumerate(row)) for row in cur.fetchall()]
-            if not rv[0]:
+            if not rv:
                 return None
             config[config_name] = rv[0]['config_value']
     return config
