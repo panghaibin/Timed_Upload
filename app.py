@@ -1,6 +1,7 @@
 import os
 import time
 import sqlite3
+import logging
 from datetime import datetime
 from datetime import timedelta
 from contextlib import closing
@@ -162,7 +163,11 @@ def antigen_form():
     test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
     test_img.save(test_img_path)
     transform_img = request.form.get('img_transform') == '1'
-    test_cps_path = compress_img(test_img_path, transform_img)
+    try:
+        test_cps_path = compress_img(test_img_path, transform_img)
+    except Exception as e:
+        logging.error(e)
+        return render_template('antigen-form.html', msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>'))
 
     test_date_time = datetime.strptime(test_date + ' ' + test_time, '%Y-%m-%d %H:%M')
     test_timestamp = time.mktime(test_date_time.timetuple())
