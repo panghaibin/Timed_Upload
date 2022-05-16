@@ -27,10 +27,15 @@ def get_history(id_=None, username=None, status=None):
         return rv
 
 
-def set_history(id_, status):
+def set_history(id_, status, update_time=None):
     with sqlite3.connect(DATABASE) as db:
-        query = "UPDATE history SET status = ? WHERE id = ?"
-        db.cursor().execute(query, (status, id_))
+        if not update_time:
+            query = "UPDATE history SET status = ? WHERE id = ?"
+            db.cursor().execute(query, (status, id_))
+
+        else:
+            query = "UPDATE history SET status = ?, update_time = ? WHERE id = ?"
+            db.cursor().execute(query, (status, update_time, id_))
         db.commit()
 
 
@@ -59,10 +64,13 @@ def get_user_config(username, config_names):
 
 def job():
     pending = get_history(status='pending')
-    for i, task in enumerate(pending):
+    running = []
+    for task in pending:
         if task['schedule_time'] > time.time():
             continue
+        running.append(task)
         set_history(task['id'], 'running')
+    for i, task in enumerate(running):
         username = task['username']
         test_type = task['test_type']
         test_method = task['test_method']
@@ -79,7 +87,7 @@ def job():
             username, password, name, test_type, test_method, test_times, test_result, test_img_path, test_rimg_name
         )
         status, result = ag.upload()
-        set_history(task['id'], status)
+        set_history(task['id'], status, time.time())
         title = f'{username[-4:]}第{test_times}次{status_map[status]}'
         user_config = get_user_config(username, ['api_type', 'api_key'])
         if not user_config:

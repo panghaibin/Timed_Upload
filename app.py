@@ -189,7 +189,7 @@ def history():
         return redirect(url_for('login'))
     username = session['username']
     if request.method == 'GET':
-        thead = ['选择', '状态', '计划时间', '执行时间', '次数', '类型', '方式', '结果', '原图', '上传图']
+        thead = ['选择', '状态', '计划时间', '完成时间', '次数', '类型', '方式', '结果', '原图', '上传图']
         status_color_map = {
             'pending': '#ffc107',
             'running': '#ffc107',
@@ -212,8 +212,7 @@ def history():
         else:
             user_histories = query_db(
                 'select * from history where status != ? and username = ? order by schedule_time desc',
-                ['deleted', username],
-                one=False
+                ['deleted', username]
             )
             username_name = {}
         items = []
@@ -224,12 +223,17 @@ def history():
             cps_path = user_history.get('test_cps_path')
             img_str = Markup(get_img_str(h_username, img_path))
             cps_str = Markup(get_img_str(h_username, cps_path))
+            update_time = user_history.get('update_time')
+            if update_time is None:
+                update_time = '-'
+            else:
+                update_time = datetime.fromtimestamp(update_time).strftime('%m-%d %H:%M')
             item = {
                 'id': user_history.get('id'),
                 'status_color': status_color_map.get(status),
                 'status': status_map.get(status),
                 'sch_time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%m-%d %H:%M'),
-                'real_time': '-',
+                'real_time': update_time,
                 'type': user_history.get('test_type'),
                 'method': user_history.get('test_method'),
                 'times': user_history.get('test_times'),
