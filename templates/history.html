@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width,user-scalable=no" name="viewport">
-    <title>{{ username }}的计划任务记录</title>
+    <title>计划任务记录</title>
 </head>
 <style>
     table {
@@ -13,6 +13,7 @@
     table, th, td {
         border: 1px solid black;
     }
+
     a {
         text-decoration: none;
         color: blue;
@@ -21,15 +22,19 @@
 <body>
 <a href="antigen">计划任务上传</a> | 计划任务记录 | <a href="logout">退出</a>
 <p>{{ username }}的计划任务记录</p>
-<button onclick="location.reload();">刷新</button>
-<br>
-<br>
+<p>
+    <button onclick="location.reload();">刷新</button>
+</p>
 <form action="" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
     <table border="1" style="border: 1px solid black; width: 100%">
         <tr>
             <th>选择</th>
+            {% if role == 'admin' %}
+                <th>学号</th>
+                <th>姓名</th>
+            {% endif %}
             <th>当前状态</th>
             <th>计划时间</th>
             <th>次数</th>
@@ -45,7 +50,11 @@
                         <input type="checkbox" name="history" value="{{ item.id }}">
                     </label>
                 </td>
-                <td>{{ item.status }}</td>
+                {% if role == 'admin' %}
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.name }}</td>
+                {% endif %}
+                <td style="color: {{ item.status_color }}">{{ item.status }}</td>
                 <td>{{ item.time }}</td>
                 <td>{{ item.times }}</td>
                 <td>{{ item.type }}</td>
@@ -55,8 +64,16 @@
             </tr>
         {% endfor %}
     </table>
-    <br>
-    <input type="submit" value="删除选中">
+    <p>
+        操作：
+        <label>
+            <select name="action">
+                <option value="delete">删除</option>
+            </select>
+        </label>
+    <p>
+        <input type="submit" value="执行操作">
+    </p>
 </form>
 </body>
 </html>

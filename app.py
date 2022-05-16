@@ -97,9 +97,14 @@ def login():
         password = request.form.get('password')
         if username.strip() == '' or password.strip() == '':
             return render_template('login.html', msg='请输入用户名和密码')
-        password_from_db = query_db('select password from users where username = ?', [username], one=True)
-        if password_from_db is not None and password == password_from_db.get('password'):
+        user_in_db = query_db('select password, role_id from users where username = ?', [username], one=True)
+        if user_in_db is not None and password == user_in_db.get('password'):
             session['username'] = username
+            if user_in_db.get('role_id') == 1:
+                session['role'] = 'admin'
+                return redirect(url_for('history'))
+            else:
+                session['role'] = 'user'
             return redirect(url_for('antigen'))
         return render_template('login.html', msg='密码错误或用户不存在，请联系管理员', username=username)
     return render_template('login.html')
@@ -188,18 +193,33 @@ def history():
             'success': '#28a745',
             'fail': '#dc3545',
             'uploaded': '#007bff',
+            'deleted': '#6c757d'
         }
-        user_histories = query_db(
-            'select * from history where status != ? and username = ? order by schedule_time desc',
-            ['deleted', username],
-            one=False
-        )
+        role = session.get('role')
+        if role == 'admin':
+            user_histories = query_db(
+                'select * from history order by username asc, schedule_time desc'
+            )
+            username_name = {
+                i['username']: i['name']
+                for i in query_db('select username, name from users')
+            }
+        else:
+            user_histories = query_db(
+                'select * from history where status != ? and username = ? order by schedule_time desc',
+                ['deleted', username],
+                one=False
+            )
+            username_name = {}
         items = []
         for user_history in user_histories:
             status = user_history.get('status')
             item = {
                 'id': user_history.get('id'),
-                'status': Markup('<span style="color: %s">%s</span>' % (status_color_map[status], status_map[status])),
+                'username': user_history.get('username'),
+                'name': username_name.get(user_history.get('username')),
+                'status_color': status_color_map.get(status),
+                'status': status_map.get(status),
                 'time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%Y-%m-%d %H:%M'),
                 'type': user_history.get('test_type'),
                 'method': user_history.get('test_method'),
@@ -208,17 +228,26 @@ def history():
                 'img': './img/%s/%s' % (username, user_history.get('test_img_path').replace('\\', '/').split('/')[-1]),
             }
             items.append(item)
-        return render_template('history.html', username=username, items=items)
+        return render_template('history.html', username=username, items=items, role=role)
     if request.method == 'POST':
+        action_map = {
+            'delete': 'deleted',
+        }
         username = session['username']
         form_username = request.form.get('username')
-        if username != form_username:
-            return '403 Forbidden', 403
+        action = action_map.get(request.form.get('action'))
         delete_list = request.form.getlist('history')
-        query = 'update history set status = ? where username = ? and ('
+        if not delete_list:
+            return redirect(url_for('history'))
+        if username != form_username or action is None:
+            return '403 Forbidden', 403
+        if session.get('role') == 'admin':
+            query = 'update history set status = ? where username = ? or ('
+        else:
+            query = 'update history set status = ? where username = ? and ('
         query += ' or '.join(['id = ?'] * len(delete_list))
         query += ')'
-        modify_db(query, ['deleted', username] + delete_list)
+        modify_db(query, [action, username] + delete_list)
         return redirect(url_for('history'))
 
 

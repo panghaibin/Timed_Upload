@@ -23,6 +23,7 @@ status_map = {
     'success': '上传成功',
     'fail': '上传失败',
     'uploaded': '已上传过',
+    'deleted': '已删除',
 }
 
 
