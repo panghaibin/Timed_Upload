@@ -268,11 +268,15 @@ def history():
 
 @app.route('/img/<username>/<img_name>')
 def img(username, img_name):
+    if session.get('role') != 'admin' and session.get('username') != username:
+        return '403 Forbidden', 403
     return send_from_directory(os.path.join(UPLOAD_FOLDER, username), img_name)
 
 
 @app.route('/img_show/<username>/<img_name>')
 def img_show(username, img_name):
+    if session.get('role') != 'admin' and session.get('username') != username:
+        return '403 Forbidden', 403
     html = '<img src="/img/%s/%s" alt="%s" style="height:100%%; width: auto;">' % (username, img_name, img_name)
     return Markup(html)
 
