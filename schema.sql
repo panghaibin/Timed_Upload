@@ -16,6 +16,7 @@ create table if not exists history (
   test_times text not null,
   test_result text not null,
   test_img_path text not null,
+  test_cps_path text not null,
   test_rimg_name text not null
 );
 

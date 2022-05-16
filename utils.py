@@ -39,6 +39,15 @@ def get_time():
     return t
 
 
+def get_img_str(username, img_path):
+    if not img_path:
+        img_str = '无'
+    else:
+        img_path = './img_show/%s/%s' % (username, img_path.replace('\\', '/').split('/')[-1])
+        img_str = f'<a target="_blank" href="{img_path}">查看</a>'
+    return img_str
+
+
 def encryptPass(password):
     key_str = '''-----BEGIN PUBLIC KEY-----
     MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDl/aCgRl9f/4ON9MewoVnV58OL

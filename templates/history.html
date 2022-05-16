@@ -6,17 +6,119 @@
     <title>计划任务记录</title>
 </head>
 <style>
+    html, body{
+        min-width: 350px;
+    }
+    a {
+        text-decoration: none;
+        color: blue;
+    }
+
     table {
         border-collapse: collapse;
     }
 
-    table, th, td {
-        border: 1px solid black;
+    tr:nth-of-type(odd) {
+        background: #eee;
     }
 
-    a {
-        text-decoration: none;
-        color: blue;
+    th {
+        background: #333;
+        color: white;
+        font-weight: bold;
+    }
+
+    td, th {
+        padding: 6px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+
+    @media only screen and (max-width: 600px),
+    (min-device-width: 600px) and (max-device-width: 750px) {
+
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+
+        /* Hide table headers (but not display: none;, for accessibility) */
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        tr, tr:nth-of-type(odd) {
+            background: #ffffff;
+            border: 1px solid #ccc;
+        }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 20%;
+        }
+
+        td:before {
+            /* Now like a table header */
+            position: absolute;
+            /* Top/left values mimic padding */
+            top: 6px;
+            left: 6px;
+            {#width: 30%;#}
+            padding-right: 10px;
+            white-space: nowrap;
+        }
+
+        /*
+        Label the data
+        */
+        td:nth-of-type(1):before {
+            content: "选择";
+        }
+
+        td:nth-of-type(2):before {
+            content: "状态";
+        }
+
+        td:nth-of-type(3):before {
+            content: "计划";
+        }
+
+        td:nth-of-type(4):before {
+            content: "次数";
+        }
+
+        td:nth-of-type(5):before {
+            content: "类型";
+        }
+
+        td:nth-of-type(6):before {
+            content: "方式";
+        }
+
+        td:nth-of-type(7):before {
+            content: "结果";
+        }
+
+        td:nth-of-type(8):before {
+            content: "原图";
+        }
+
+        td:nth-of-type(9):before {
+            content: "上传图";
+        }
+
+        td:nth-of-type(10):before {
+            content: "学号";
+        }
+
+        td:nth-of-type(11):before {
+            content: "姓名";
+        }
     }
 </style>
 <body>
@@ -28,21 +130,25 @@
 <form action="" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
-    <table border="1" style="border: 1px solid black; width: 100%">
+    <table>
+        <thead>
         <tr>
             <th>选择</th>
-            {% if role == 'admin' %}
-                <th>学号</th>
-                <th>姓名</th>
-            {% endif %}
-            <th>当前状态</th>
-            <th>计划时间</th>
+            <th>状态</th>
+            <th>计划</th>
             <th>次数</th>
             <th>类型</th>
             <th>方式</th>
             <th>结果</th>
-            <th>查看图片</th>
+            <th>原图</th>
+            <th>上传图</th>
+            {% if role == 'admin' %}
+                <th>学号</th>
+                <th>姓名</th>
+            {% endif %}
         </tr>
+        </thead>
+        <tbody>
         {% for item in items %}
             <tr>
                 <td>
@@ -50,19 +156,21 @@
                         <input type="checkbox" name="history" value="{{ item.id }}">
                     </label>
                 </td>
-                {% if role == 'admin' %}
-                    <td>{{ item.username }}</td>
-                    <td>{{ item.name }}</td>
-                {% endif %}
-                <td style="color: {{ item.status_color }}">{{ item.status }}</td>
+                <td><span style="color: {{ item.status_color }}">{{ item.status }}</span></td>
                 <td>{{ item.time }}</td>
                 <td>{{ item.times }}</td>
                 <td>{{ item.type }}</td>
                 <td>{{ item.method }}</td>
                 <td>{{ item.result }}</td>
-                <td><a target="_blank" href="{{ item.img }}">查看</a></td>
+                <td>{{ item.img }}</td>
+                <td>{{ item.cps }}</td>
+                {% if role == 'admin' %}
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.name }}</td>
+                {% endif %}
             </tr>
         {% endfor %}
+        </tbody>
     </table>
     <p>
         操作：

@@ -5,7 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
-from utils import abs_path, get_time, get_config, status_map
+from utils import abs_path, get_time, get_config, status_map, compress_img, get_img_str
 from flask import Flask, render_template, request, session, redirect, url_for, g, Markup, send_from_directory
 
 
@@ -156,20 +156,23 @@ def antigen_form():
         return render_template('antigen-form.html', msg=Markup('图片格式错误，<a href="/antigen">返回重新上传</a>'))
     if None in [test_type, test_method, test_times, test_result, test_date, test_time]:
         return render_template('antigen-form.html', msg=Markup('请填写完整信息，<a href="/antigen">返回重新上传</a>'))
-    test_date_time = datetime.strptime(test_date + ' ' + test_time, '%Y-%m-%d %H:%M')
-    test_timestamp = time.mktime(test_date_time.timetuple())
     test_img_path = os.path.join(UPLOAD_FOLDER, username)
     if not os.path.exists(test_img_path):
         os.mkdir(test_img_path)
     test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
     test_img.save(test_img_path)
+    transform_img = request.form.get('img_transform') == '1'
+    test_cps_path = compress_img(test_img_path, transform_img)
+
+    test_date_time = datetime.strptime(test_date + ' ' + test_time, '%Y-%m-%d %H:%M')
+    test_timestamp = time.mktime(test_date_time.timetuple())
     modify_db(
         'insert into history '
         '(username, schedule_time, test_type, test_method, test_times, test_result, '
-        'test_img_path, test_rimg_name, status)'
-        'values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'test_img_path, test_cps_path, test_rimg_name, status)'
+        'values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [username, test_timestamp, test_type, test_method, test_times, test_result,
-         test_img_path, test_rimg_name, 'pending']
+         test_img_path, test_cps_path, test_rimg_name, 'pending']
     )
     return redirect(url_for('history'))
     # return render_template(
@@ -213,10 +216,15 @@ def history():
         items = []
         for user_history in user_histories:
             status = user_history.get('status')
+            h_username = user_history.get('username')
+            img_path = user_history.get('test_img_path')
+            cps_path = user_history.get('test_cps_path')
+            img_str = Markup(get_img_str(h_username, img_path))
+            cps_str = Markup(get_img_str(h_username, cps_path))
             item = {
                 'id': user_history.get('id'),
-                'username': user_history.get('username'),
-                'name': username_name.get(user_history.get('username')),
+                'username': h_username,
+                'name': username_name.get(h_username),
                 'status_color': status_color_map.get(status),
                 'status': status_map.get(status),
                 'time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%Y-%m-%d %H:%M'),
@@ -224,9 +232,8 @@ def history():
                 'method': user_history.get('test_method'),
                 'times': user_history.get('test_times'),
                 'result': user_history.get('test_result'),
-                'img': './img_show/%s/%s' %
-                       (user_history.get('username'),
-                        user_history.get('test_img_path').replace('\\', '/').split('/')[-1]),
+                'img': img_str,
+                'cps': cps_str,
             }
             items.append(item)
         return render_template('history.html', username=username, items=items, role=role)
