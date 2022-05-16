@@ -225,7 +225,9 @@ def history():
                 'method': user_history.get('test_method'),
                 'times': user_history.get('test_times'),
                 'result': user_history.get('test_result'),
-                'img': './img/%s/%s' % (username, user_history.get('test_img_path').replace('\\', '/').split('/')[-1]),
+                'img': './img_show/%s/%s' %
+                       (user_history.get('username'),
+                        user_history.get('test_img_path').replace('\\', '/').split('/')[-1]),
             }
             items.append(item)
         return render_template('history.html', username=username, items=items, role=role)
@@ -254,6 +256,12 @@ def history():
 @app.route('/img/<username>/<img_name>')
 def img(username, img_name):
     return send_from_directory(os.path.join(UPLOAD_FOLDER, username), img_name)
+
+
+@app.route('/img_show/<username>/<img_name>')
+def img_show(username, img_name):
+    html = '<img src="/img/%s/%s" alt="%s" style="height:100%%; width: auto;">' % (username, img_name, img_name)
+    return Markup(html)
 
 
 if __name__ == '__main__':
