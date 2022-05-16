@@ -149,24 +149,26 @@ def antigen_form():
     suffix_list = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
 
     username = session['username']
-    test_type = type_map.get(int(request.form.get('type', 0)))
-    test_method = method_map.get(int(request.form.get('method', 0)))
-    test_times = test_times_map.get(int(request.form.get('test_times', 0)))
-    test_result = result_map.get(int(request.form.get('result', 0)))
-    test_date = request.form.get('date')
-    test_time = request.form.get('time')
-    test_img = request.files.get('image')
-    test_rimg_name = test_img.filename
-    suffix = test_rimg_name.split('.')[-1]
-    if '.' not in test_rimg_name or suffix not in suffix_list:
+    type_ = type_map.get(int(request.form.get('type', 0)))
+    method = method_map.get(int(request.form.get('method', 0)))
+    times = test_times_map.get(int(request.form.get('test_times', 0)))
+    result = result_map.get(int(request.form.get('result', 0)))
+    month = request.form.get('month')
+    day = request.form.get('day')
+    hour = request.form.get('hour')
+    minute = request.form.get('minute')
+    img_ = request.files.get('image')
+    rimg_name = img_.filename
+    suffix = rimg_name.split('.')[-1]
+    if '.' not in rimg_name or suffix not in suffix_list:
         return render_template('antigen-form.html', msg=Markup('图片格式错误，<a href="/antigen">返回重新上传</a>'))
-    if None in [test_type, test_method, test_times, test_result, test_date, test_time]:
+    if None in [type_, method, times, result, month, day, hour, minute]:
         return render_template('antigen-form.html', msg=Markup('请填写完整信息，<a href="/antigen">返回重新上传</a>'))
     test_img_path = os.path.join(UPLOAD_FOLDER, username)
     if not os.path.exists(test_img_path):
         os.mkdir(test_img_path)
     test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
-    test_img.save(test_img_path)
+    img_.save(test_img_path)
     transform_img = request.form.get('img_transform') == '1'
     try:
         test_cps_path = compress_img(test_img_path, transform_img)
@@ -174,15 +176,19 @@ def antigen_form():
         logging.error(e)
         return render_template('antigen-form.html', msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>'))
 
-    test_date_time = datetime.strptime(test_date + ' ' + test_time, '%Y-%m-%d %H:%M')
+    try:
+        test_date_time = datetime.strptime(f'2022-{month}-{day} {hour}:{minute}', '%Y-%m-%d %H:%M')
+    except Exception as e:
+        logging.error(e)
+        return render_template('antigen-form.html', msg=Markup(f'日期格式错误，<a href="/antigen">返回重新上传</a>'))
     test_timestamp = time.mktime(test_date_time.timetuple())
     modify_db(
         'insert into history '
         '(username, schedule_time, test_type, test_method, test_times, test_result, '
         'test_img_path, test_cps_path, test_rimg_name, status)'
         'values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [username, test_timestamp, test_type, test_method, test_times, test_result,
-         test_img_path, test_cps_path, test_rimg_name, 'pending']
+        [username, test_timestamp, type_, method, times, result,
+         test_img_path, test_cps_path, rimg_name, 'pending']
     )
     return redirect(url_for('history'))
     # return render_template(
