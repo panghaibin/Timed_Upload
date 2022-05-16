@@ -1,4 +1,5 @@
 # 项目文件
+test.*.py
 config.yml
 database.db
 uploads

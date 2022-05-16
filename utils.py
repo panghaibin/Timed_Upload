@@ -11,9 +11,9 @@ import logging
 import requests
 import datetime
 import traceback
-from PIL import Image, ImageOps, ImageEnhance
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+from PIL import Image, ImageOps, ImageEnhance, ImageFont, ImageDraw
 
 abs_path = os.path.split(os.path.realpath(__file__))[0]
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -191,7 +191,7 @@ def get_random_img(img_path):
     return f'{img_path}/{random_img}'
 
 
-def img_proc(img_path, transform=False):
+def img_proc(img_path, transform=False, watermark=None):
     cur_img = Image.open(img_path)
     cur_img = ImageOps.exif_transpose(cur_img)
     cur_img = cur_img.convert('RGB')
@@ -222,6 +222,17 @@ def img_proc(img_path, transform=False):
         cur_img = bri_enhancer.enhance(random.randint(8, 12) / 10)
         col_enhancer = ImageEnhance.Color(cur_img)
         cur_img = col_enhancer.enhance(random.randint(9, 11) / 10)
+
+    if not not watermark:
+        width, height = cur_img.size
+        draw = ImageDraw.Draw(cur_img)
+        font_path = os.path.join(abs_path, 'src/font/NotoSansSC-Regular.otf')
+        font_pt = int(height * 0.12 * 72 / 96)
+        wm_font = ImageFont.truetype(font_path, font_pt)
+        wm_width, wm_height = wm_font.getsize(watermark)
+        wm_left = int((width - wm_width) / 4)
+        wm_top = int((height - wm_height) / 16)
+        draw.text((wm_left, wm_top), watermark, (245, 51, 15), font=wm_font)
 
     cps_time = get_time().strftime('%M%S%f')
     img_path_list = img_path.split('.')
