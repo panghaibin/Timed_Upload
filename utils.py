@@ -168,6 +168,29 @@ def jsLine2Json(js):
     return json.loads(js[js.find('=') + 1:])
 
 
+def get_random_img(img_path):
+    json_path = f'{img_path}/img_times.json'
+    if not os.path.exists(json_path):
+        times = {}
+    else:
+        with open(json_path, 'r') as f:
+            times = json.load(f)
+    new_times = {}
+    for img_name in os.listdir(img_path):
+        if 'compress' not in img_name and 'json' not in img_name:
+            if img_name not in times.keys():
+                new_times[img_name] = 0
+            else:
+                new_times.update({img_name: times[img_name]})
+    sorted_times = sorted(new_times.items(), key=lambda x: x[1], reverse=False)
+    min_times_imgs = [x[0] for x in sorted_times if x[1] == sorted_times[0][1]]
+    random_img = random.choice(min_times_imgs)
+    new_times[random_img] += 1
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(new_times, f)
+    return f'{img_path}/{random_img}'
+
+
 def compress_img(img_path, transform=False):
     cur_img = Image.open(img_path)
     cur_img = ImageOps.exif_transpose(cur_img)
@@ -202,7 +225,7 @@ def compress_img(img_path, transform=False):
 
     cps_time = get_time().strftime('%M%S%f')
     img_path_list = img_path.split('.')
-    img_path_list[-2] += f'_{cps_time}_'
+    img_path_list[-2] += f'_compress_{cps_time}'
     img_path_list.append('jpg')
     new_img_path = '.'.join(img_path_list)
     target_size = 3 * 1024 * 1024
