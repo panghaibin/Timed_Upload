@@ -18,39 +18,39 @@
     <p>姓名：{{ name }}</p>
     <p><label>类型：</label>
         <label>
-            <input type="radio" name="type" value="1" checked>
+            <input id="antigen" type="radio" name="type" value="1" checked>
         </label>
-        <label>抗原</label>
+        <label for="antigen">抗原</label>
         <label>
-            <input type="radio" name="type" value="2">
+            <input id="pcr" type="radio" name="type" value="2">
         </label>
-        <label>核酸</label>
+        <label for="pcr">核酸</label>
     </p>
     <p>
         <label>方式：</label>
         <label>
-            <input type="radio" name="method" value="1" checked>
+            <input id="nose" type="radio" name="method" value="1" checked>
         </label>
-        <label>鼻腔</label>
+        <label for="nose">鼻腔</label>
         <label>
-            <input type="radio" name="method" value="2">
+            <input id="nose_throat" type="radio" name="method" value="2">
         </label>
-        <label>鼻咽</label>
+        <label for="nose_throat">鼻咽</label>
         <label>
-            <input type="radio" name="method" value="3">
+            <input id="throat" type="radio" name="method" value="3">
         </label>
-        <label>口腔</label>
+        <label for="throat">口腔</label>
     </p>
     <p>
         <label>次数：</label>
         <label>
-            <input type="radio" name="test_times" value="1" checked>
+            <input id="first" type="radio" name="test_times" value="1" checked>
         </label>
-        <label>第1次</label>
+        <label for="first">第1次</label>
         <label>
-            <input type="radio" name="test_times" value="2">
+            <input id="second" type="radio" name="test_times" value="2">
         </label>
-        <label>第2次</label>
+        <label for="second">第2次</label>
     </p>
     <p>
         <label>计划：</label>
@@ -62,13 +62,13 @@
     <p>
         <label>结果：</label>
         <label>
-            <input type="radio" name="result" value="1" checked>
+            <input id="neg" type="radio" name="result" value="1" checked>
         </label>
-        <label>阴性</label>
+        <label for="neg">阴性</label>
         <label>
-            <input type="radio" name="result" value="2">
+            <input id="pos" type="radio" name="result" value="2">
         </label>
-        <label>阳性</label>
+        <label for="pos">阳性</label>
     </p>
     <p>
         <label>图片：</label>
@@ -79,6 +79,12 @@
         <span style="font-size: 0.8em">
         图片不限大小，上传时自动压缩
     </span>
+    </p>
+    <p>
+        <label>
+            <input id="img_transform" type="checkbox" name="img_transform" value="1">
+        </label>
+        <label for="img_transform">对图片作随机变换</label>
     </p>
     <p>
         <input type="submit" value="提交">
