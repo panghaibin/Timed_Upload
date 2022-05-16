@@ -119,16 +119,21 @@ def antigen():
     username = session['username']
     name = query_db('select name from users where username = ?', [username], one=True).get('name')
     t = get_time()
-    t += timedelta(minutes=1)
+    delta_minutes = 5 - t.minute % 5
+    t += timedelta(minutes=delta_minutes)
     t += timedelta(days=1) if t.hour >= 22 else timedelta()
-    form_date = t.strftime('%Y-%m-%d')
-    form_time = t.strftime('07:%M') if t.hour >= 22 or t.hour <= 5 else t.strftime('%H:%M')
     return render_template(
         'antigen.html',
         username=session['username'],
         name=name,
-        date=form_date,
-        time=form_time
+        month_list=[i for i in range(1, 13)],
+        month=t.month,
+        day_list=[i for i in range(1, 32)],
+        day=t.day,
+        hour_list=[i for i in range(0, 24)],
+        hour=7 if t.hour >= 22 or t.hour <= 5 else t.hour,
+        minute_list=[i for i in range(0, 60, 5)],
+        minute=t.minute,
     )
 
 

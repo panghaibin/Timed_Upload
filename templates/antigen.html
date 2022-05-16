@@ -52,11 +52,57 @@
         </label>
         <label for="second">第2次</label>
     </p>
+{#    <p>#}
+{#        <label>计划：</label>#}
+{#        <label>#}
+{#            <input type="date" name="date" value="{{ date }}">#}
+{#            <input type="time" name="time" value="{{ time }}">#}
+{#        </label>#}
+{#    </p>#}
     <p>
         <label>计划：</label>
         <label>
-            <input type="date" name="date" value="{{ date }}">
-            <input type="time" name="time" value="{{ time }}">
+            2022
+            /
+            <select name="month" style="width: 3.5em">
+                {% for m in month_list %}
+                    <option value="{{ m }}"
+                    {% if m == month %}
+                        selected
+                    {% endif %}
+                    >{{ "%02d"|format(m) }}</option>
+                {% endfor %}
+            </select>
+            /
+            <select name="day" style="width: 3.5em">
+                {% for d in day_list %}
+                    <option value="{{ d }}"
+                    {% if d == day %}
+                        selected
+                    {% endif %}
+                    >{{ "%02d"|format(d) }}</option>
+                {% endfor %}
+            </select>
+            -
+            <select name="hour" style="width: 3.5em">
+                {% for h in hour_list %}
+                    <option value="{{ h }}"
+                    {% if h == hour %}
+                        selected
+                    {% endif %}
+                    >{{ "%02d"|format(h) }}</option>
+                {% endfor %}
+            </select>
+            :
+            <select name="minute" style="width: 3.5em">
+                {% for m in minute_list %}
+                    <option value="{{ m }}"
+                    {% if m == minute %}
+                        selected
+                    {% endif %}
+                    >{{ "%02d"|format(m) }}</option>
+                {% endfor %}
+            </select>
         </label>
     </p>
     <p>
