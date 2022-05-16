@@ -3,7 +3,7 @@ create table if not exists users (
   username text not null unique,
   password text not null,
   name text not null,
-  role_id int(11) not null
+  role_id integer not null
 );
 
 create table if not exists history (
