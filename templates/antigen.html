@@ -52,13 +52,13 @@
         </label>
         <label for="second">第2次</label>
     </p>
-{#    <p>#}
-{#        <label>计划：</label>#}
-{#        <label>#}
-{#            <input type="date" name="date" value="{{ date }}">#}
-{#            <input type="time" name="time" value="{{ time }}">#}
-{#        </label>#}
-{#    </p>#}
+    {#    <p>#}
+    {#        <label>计划：</label>#}
+    {#        <label>#}
+    {#            <input type="date" name="date" value="{{ date }}">#}
+    {#            <input type="time" name="time" value="{{ time }}">#}
+    {#        </label>#}
+    {#    </p>#}
     <p>
         <label>计划：</label>
         <label>
@@ -67,9 +67,9 @@
             <select name="month" style="width: 3.5em">
                 {% for m in month_list %}
                     <option value="{{ m }}"
-                    {% if m == month %}
-                        selected
-                    {% endif %}
+                            {% if m == month %}
+                            selected
+                            {% endif %}
                     >{{ "%02d"|format(m) }}</option>
                 {% endfor %}
             </select>
@@ -77,9 +77,9 @@
             <select name="day" style="width: 3.5em">
                 {% for d in day_list %}
                     <option value="{{ d }}"
-                    {% if d == day %}
-                        selected
-                    {% endif %}
+                            {% if d == day %}
+                            selected
+                            {% endif %}
                     >{{ "%02d"|format(d) }}</option>
                 {% endfor %}
             </select>
@@ -87,9 +87,9 @@
             <select name="hour" style="width: 3.5em">
                 {% for h in hour_list %}
                     <option value="{{ h }}"
-                    {% if h == hour %}
-                        selected
-                    {% endif %}
+                            {% if h == hour %}
+                            selected
+                            {% endif %}
                     >{{ "%02d"|format(h) }}</option>
                 {% endfor %}
             </select>
@@ -97,9 +97,9 @@
             <select name="minute" style="width: 3.5em">
                 {% for m in minute_list %}
                     <option value="{{ m }}"
-                    {% if m == minute %}
-                        selected
-                    {% endif %}
+                            {% if m == minute %}
+                            selected
+                            {% endif %}
                     >{{ "%02d"|format(m) }}</option>
                 {% endfor %}
             </select>
@@ -136,6 +136,12 @@
         </label>
         <label for="random_img">使用生成图片</label>
         <br><label for="random_img" style="font-size: 0.8em">随机生成一张图片而不是上传</label>
+        <br>
+        <label for="random_img" style="font-size: 0.8em">
+            <span id="random_img_warning" style="color: red; opacity: 0;height: 1em">
+                警告：高危操作！
+            </span>
+        </label>
     </p>
     <p>
         <input type="submit" value="提交">
@@ -148,9 +154,11 @@
         if (this.checked) {
             document.getElementById("img_upload_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
             document.getElementById("img_transform_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
+            document.getElementById("random_img_warning").style.opacity = "1";
         } else {
             document.getElementById("img_upload_form").setAttribute("style", "");
             document.getElementById("img_transform_form").setAttribute("style", "");
+            document.getElementById("random_img_warning").style.opacity = "0";
         }
     }
 </script>
