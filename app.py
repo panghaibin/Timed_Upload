@@ -7,7 +7,7 @@ from datetime import datetime
 from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
-from utils import abs_path, get_time, get_config, status_map, compress_img, get_img_str, get_random_img
+from utils import abs_path, get_time, get_config, status_map, img_proc, get_img_str, get_random_img
 from flask import send_from_directory, render_template, make_response, redirect, url_for, Flask, Markup, request, g, \
     session
 
@@ -166,9 +166,15 @@ def antigen_form():
     rimg_name = img_.filename
     suffix = rimg_name.split('.')[-1]
     if ('.' not in rimg_name or suffix not in suffix_list) and not random_img:
-        return render_template('antigen-form.html', msg=Markup('图片格式错误，<a href="/antigen">返回重新上传</a>'))
+        return render_template(
+            'antigen-form.html',
+            msg=Markup('图片格式错误，<a href="/antigen">返回重新上传</a>')
+        ), 400
     if None in [type_, method, times, result, month, day, hour, minute]:
-        return render_template('antigen-form.html', msg=Markup('请填写完整信息，<a href="/antigen">返回重新上传</a>'))
+        return render_template(
+            'antigen-form.html',
+            msg=Markup('请填写完整信息，<a href="/antigen">返回重新上传</a>')
+        ), 400
     test_img_path = os.path.join(UPLOAD_FOLDER, username)
     if not os.path.exists(test_img_path):
         os.mkdir(test_img_path)
@@ -176,16 +182,23 @@ def antigen_form():
         test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
         img_.save(test_img_path)
         transform_img = request.form.get('img_transform') == '1'
-        try:
-            test_cps_path = compress_img(test_img_path, transform_img)
-        except Exception as e:
-            logging.error(e)
-            return render_template('antigen-form.html', msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>'))
+        cps_required = os.path.getsize(test_img_path) > 3 * 1024 * 1024
+        if not transform_img and not cps_required:
+            test_cps_path = test_img_path
+        else:
+            try:
+                test_cps_path = img_proc(test_img_path, transform=transform_img)
+            except Exception as e:
+                logging.error(e)
+                return render_template(
+                    'antigen-form.html',
+                    msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>')
+                ), 500
     else:
         test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.jpg')
         random_img_path = get_random_img(RANDOM_IMG_FOLDER)
         shutil.copy(random_img_path, test_img_path)
-        test_cps_path = compress_img(test_img_path, True)
+        test_cps_path = img_proc(test_img_path, transform=True)
         os.remove(test_img_path)
         test_img_path = ''
 
@@ -193,7 +206,10 @@ def antigen_form():
         test_date_time = datetime.strptime(f'2022-{month}-{day} {hour}:{minute}', '%Y-%m-%d %H:%M')
     except Exception as e:
         logging.error(e)
-        return render_template('antigen-form.html', msg=Markup(f'日期格式错误，<a href="/antigen">返回重新上传</a>'))
+        return render_template(
+            'antigen-form.html',
+            msg=Markup(f'日期格式错误，<a href="/antigen">返回重新上传</a>')
+        ), 400
     test_timestamp = time.mktime(test_date_time.timetuple())
     modify_db(
         'insert into history '
@@ -204,12 +220,6 @@ def antigen_form():
          test_img_path, test_cps_path, rimg_name, 'pending']
     )
     return redirect(url_for('history'))
-    # return render_template(
-    #     'antigen-form.html',
-    #     msg=Markup('''信息提交成功！<a href="/antigen">返回</a><br><br><br>
-    #     <a href="/history">查看所有记录</a><br><br><br>
-    #     ''')
-    # )
 
 
 @app.route('/history', methods=['GET', 'POST'])

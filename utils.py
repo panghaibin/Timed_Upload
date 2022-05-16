@@ -191,7 +191,7 @@ def get_random_img(img_path):
     return f'{img_path}/{random_img}'
 
 
-def compress_img(img_path, transform=False):
+def img_proc(img_path, transform=False):
     cur_img = Image.open(img_path)
     cur_img = ImageOps.exif_transpose(cur_img)
     cur_img = cur_img.convert('RGB')
@@ -231,16 +231,14 @@ def compress_img(img_path, transform=False):
     target_size = 3 * 1024 * 1024
     quality = 90
     step = 5
-    always_compress = True
 
     cur_img.save(new_img_path)
     cur_img_size = os.path.getsize(new_img_path)
-    while cur_img_size > target_size and quality > 10 or always_compress:
+    while cur_img_size > target_size and quality > 10:
         cur_img.save(new_img_path, quality=quality, optimize=True)
         cur_img = Image.open(new_img_path)
         cur_img_size = os.path.getsize(new_img_path)
         quality -= step
-        always_compress = False
 
     return new_img_path
 
