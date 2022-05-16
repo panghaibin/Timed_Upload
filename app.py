@@ -140,6 +140,7 @@ def antigen_form():
     method_map = {1: '鼻腔拭子', 2: '鼻咽拭子', 3: '口腔拭子'}
     test_times_map = {1: '1', 2: '2'}
     result_map = {1: '阴性', 2: '阳性'}
+    suffix_list = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
 
     username = session['username']
     test_type = type_map.get(int(request.form.get('type', 0)))
@@ -149,20 +150,18 @@ def antigen_form():
     test_date = request.form.get('date')
     test_time = request.form.get('time')
     test_img = request.files.get('image')
+    test_rimg_name = test_img.filename
+    suffix = test_rimg_name.split('.')[-1]
+    if '.' not in test_rimg_name or suffix not in suffix_list:
+        return render_template('antigen-form.html', msg=Markup('图片格式错误，<a href="/antigen">返回重新上传</a>'))
     if None in [test_type, test_method, test_times, test_result, test_date, test_time]:
-        return render_template('antigen-form.html', msg=Markup('请填写完整信息，<a href="/antigen">点击返回</a>'))
+        return render_template('antigen-form.html', msg=Markup('请填写完整信息，<a href="/antigen">返回重新上传</a>'))
     test_date_time = datetime.strptime(test_date + ' ' + test_time, '%Y-%m-%d %H:%M')
     test_timestamp = time.mktime(test_date_time.timetuple())
-    now_timestamp = time.time()
-    if (test_timestamp - now_timestamp) < 3 * 60:
-        test_timestamp = time.mktime(test_date_time.timetuple())
     test_img_path = os.path.join(UPLOAD_FOLDER, username)
     if not os.path.exists(test_img_path):
         os.mkdir(test_img_path)
-    test_rimg_name = test_img.filename
-    _ = test_rimg_name.split('.')
-    _[-2] = str(int(time.time() * 1000))
-    test_img_path = os.path.join(test_img_path, '.'.join(_))
+    test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
     test_img.save(test_img_path)
     modify_db(
         'insert into history '
