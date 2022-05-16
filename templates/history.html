@@ -6,9 +6,10 @@
     <title>计划任务记录</title>
 </head>
 <style>
-    html, body{
+    html, body {
         min-width: 350px;
     }
+
     a {
         text-decoration: none;
         color: blue;
@@ -34,8 +35,8 @@
         text-align: left;
     }
 
-    @media only screen and (max-width: 600px),
-    (min-device-width: 600px) and (max-device-width: 750px) {
+    @media only screen and (max-width: 830px),
+    (min-device-width: 830px) and (max-device-width: 830px) {
 
         /* Force table to not be like tables anymore */
         table, thead, tbody, th, td, tr {
@@ -59,7 +60,7 @@
             border: none;
             border-bottom: 1px solid #eee;
             position: relative;
-            padding-left: 20%;
+            padding-left: 23%;
         }
 
         td:before {
@@ -68,57 +69,18 @@
             /* Top/left values mimic padding */
             top: 6px;
             left: 6px;
-            {#width: 30%;#}
-            padding-right: 10px;
+        {#width: 30%;#} padding-right: 10px;
             white-space: nowrap;
         }
 
         /*
         Label the data
         */
-        td:nth-of-type(1):before {
-            content: "选择";
+    {% for th in thead %}
+        td:nth-of-type({{ loop.index }}):before {
+            content: "{{ th }}";
         }
-
-        td:nth-of-type(2):before {
-            content: "状态";
-        }
-
-        td:nth-of-type(3):before {
-            content: "计划";
-        }
-
-        td:nth-of-type(4):before {
-            content: "次数";
-        }
-
-        td:nth-of-type(5):before {
-            content: "类型";
-        }
-
-        td:nth-of-type(6):before {
-            content: "方式";
-        }
-
-        td:nth-of-type(7):before {
-            content: "结果";
-        }
-
-        td:nth-of-type(8):before {
-            content: "原图";
-        }
-
-        td:nth-of-type(9):before {
-            content: "上传图";
-        }
-
-        td:nth-of-type(10):before {
-            content: "学号";
-        }
-
-        td:nth-of-type(11):before {
-            content: "姓名";
-        }
+    {% endfor %}
     }
 </style>
 <body>
@@ -133,19 +95,9 @@
     <table>
         <thead>
         <tr>
-            <th>选择</th>
-            <th>状态</th>
-            <th>计划</th>
-            <th>次数</th>
-            <th>类型</th>
-            <th>方式</th>
-            <th>结果</th>
-            <th>原图</th>
-            <th>上传图</th>
-            {% if role == 'admin' %}
-                <th>学号</th>
-                <th>姓名</th>
-            {% endif %}
+            {% for th in thead %}
+                <th>{{ th }}</th>
+            {% endfor %}
         </tr>
         </thead>
         <tbody>
@@ -156,18 +108,19 @@
                         <input type="checkbox" name="history" value="{{ item.id }}">
                     </label>
                 </td>
+                {% if role == 'admin' %}
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.name }}</td>
+                {% endif %}
                 <td><span style="color: {{ item.status_color }}">{{ item.status }}</span></td>
-                <td>{{ item.time }}</td>
+                <td>{{ item.sch_time }}</td>
+                <td>{{ item.real_time }}</td>
                 <td>{{ item.times }}</td>
                 <td>{{ item.type }}</td>
                 <td>{{ item.method }}</td>
                 <td>{{ item.result }}</td>
                 <td>{{ item.img }}</td>
                 <td>{{ item.cps }}</td>
-                {% if role == 'admin' %}
-                    <td>{{ item.username }}</td>
-                    <td>{{ item.name }}</td>
-                {% endif %}
             </tr>
         {% endfor %}
         </tbody>

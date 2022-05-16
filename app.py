@@ -189,6 +189,7 @@ def history():
         return redirect(url_for('login'))
     username = session['username']
     if request.method == 'GET':
+        thead = ['选择', '状态', '计划时间', '执行时间', '次数', '类型', '方式', '结果', '原图', '上传图']
         status_color_map = {
             'pending': '#ffc107',
             'running': '#ffc107',
@@ -199,6 +200,8 @@ def history():
         }
         role = session.get('role')
         if role == 'admin':
+            thead.insert(1, '学号')
+            thead.insert(2, '姓名')
             user_histories = query_db(
                 'select * from history order by username asc, schedule_time desc'
             )
@@ -223,11 +226,10 @@ def history():
             cps_str = Markup(get_img_str(h_username, cps_path))
             item = {
                 'id': user_history.get('id'),
-                'username': h_username,
-                'name': username_name.get(h_username),
                 'status_color': status_color_map.get(status),
                 'status': status_map.get(status),
-                'time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%Y-%m-%d %H:%M'),
+                'sch_time': datetime.fromtimestamp(user_history.get('schedule_time')).strftime('%m-%d %H:%M'),
+                'real_time': '-',
                 'type': user_history.get('test_type'),
                 'method': user_history.get('test_method'),
                 'times': user_history.get('test_times'),
@@ -235,8 +237,13 @@ def history():
                 'img': img_str,
                 'cps': cps_str,
             }
+            if role == 'admin':
+                item.update({
+                    'username': h_username,
+                    'name': username_name.get(h_username),
+                })
             items.append(item)
-        return render_template('history.html', username=username, items=items, role=role)
+        return render_template('history.html', username=username, items=items, role=role, thead=thead)
     if request.method == 'POST':
         action_map = {
             'delete': 'deleted',
