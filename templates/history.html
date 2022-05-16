@@ -89,52 +89,52 @@
 <p>
     <button onclick="location.reload();">刷新</button>
 </p>
-<form action="" method="post">
+<form id="h-form" action="" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
-    <table>
-        <thead>
-        <tr>
-            {% for th in thead %}
-                <th>{{ th }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in items %}
-            <tr>
-                <td>
-                    <label>
-                        <input type="checkbox" name="history" value="{{ item.id }}">
-                    </label>
-                </td>
-                {% if role == 'admin' %}
-                    <td>{{ item.username }}</td>
-                    <td>{{ item.name }}</td>
-                {% endif %}
-                <td><span style="color: {{ item.status_color }}">{{ item.status }}</span></td>
-                <td>{{ item.sch_time }}</td>
-                <td>{{ item.real_time }}</td>
-                <td>{{ item.times }}</td>
-                <td>{{ item.type }}</td>
-                <td>{{ item.method }}</td>
-                <td>{{ item.result }}</td>
-                <td>{{ item.img }}</td>
-                <td>{{ item.cps }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <p>
-        操作：
-        <label>
-            <select name="action">
-                <option value="delete">删除</option>
-            </select>
-        </label>
-    <p>
-        <input type="submit" value="执行操作">
-    </p>
+    <input id="history" type="hidden" name="history" value="">
+    <input id="action" type="hidden" name="action" value="">
 </form>
+<table>
+    <thead>
+    <tr>
+        {% for th in thead %}
+            <th>{{ th }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+        <tr>
+            {% if role == 'admin' %}
+                <td>{{ item.username }}</td>
+                <td>{{ item.name }}</td>
+            {% endif %}
+            <td><span style="color: {{ item.status_color }}">{{ item.status }}</span></td>
+            <td>{{ item.sch_time }}</td>
+            <td>{{ item.real_time }}</td>
+            <td>{{ item.img }}</td>
+            <td>{{ item.cps }}</td>
+            <td>{{ item.times }}</td>
+            <td>{{ item.type }}</td>
+            <td>{{ item.method }}</td>
+            <td>{{ item.result }}</td>
+            <td>
+                <a href="javascript:void(0)" onclick="del_history('{{ item.id }}')">删除</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 </body>
+<script>
+    function del_history(hid) {
+        let confirm_msg = confirm('确定删除该记录？');
+        if (confirm_msg) {
+            document.getElementById('history').value = hid;
+            document.getElementById('action').value = 'delete';
+            document.getElementById('h-form').submit();
+        }
+    }
+</script>
 </html>

@@ -236,7 +236,7 @@ def history():
         return redirect(url_for('login'))
     username = session['username']
     if request.method == 'GET':
-        thead = ['选择', '状态', '计划时间', '实际完成', '次数', '类型', '方式', '结果', '原始图', '上报图']
+        thead = ['状态', '计划时间', '实际完成', '原图', '处理后', '次数', '类型', '方式', '结果', '操作', ]
         status_color_map = {
             'pending': '#ffc107',
             'running': '#ffc107',
@@ -248,8 +248,8 @@ def history():
         }
         role = session.get('role')
         if role == 'admin':
-            thead.insert(1, '学号')
-            thead.insert(2, '姓名')
+            thead.insert(0, '学号')
+            thead.insert(1, '姓名')
             user_histories = query_db(
                 'select * from history order by username asc, schedule_time desc'
             )
