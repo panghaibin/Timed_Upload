@@ -2,7 +2,8 @@ create table if not exists users (
   id integer primary key autoincrement,
   username text not null unique,
   password text not null,
-  name text not null
+  name text not null,
+  role_id int(11) not null
 );
 
 create table if not exists history (
