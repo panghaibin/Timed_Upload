@@ -8,7 +8,8 @@ from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
 from utils import abs_path, get_time, get_config, status_map, compress_img, get_img_str, get_random_img
-from flask import Flask, render_template, request, session, redirect, url_for, g, Markup, send_from_directory
+from flask import send_from_directory, render_template, make_response, redirect, url_for, Flask, Markup, request, g, \
+    session
 
 
 class Config(object):
@@ -217,7 +218,7 @@ def history():
         return redirect(url_for('login'))
     username = session['username']
     if request.method == 'GET':
-        thead = ['选择', '状态', '计划时间', '完成时间', '次数', '类型', '方式', '结果', '原图', '上传图']
+        thead = ['选择', '状态', '计划时间', '实际完成', '次数', '类型', '方式', '结果', '原始图', '上报图']
         status_color_map = {
             'pending': '#ffc107',
             'running': '#ffc107',
@@ -303,15 +304,21 @@ def history():
 def img(username, img_name):
     if session.get('role') != 'admin' and session.get('username') != username:
         return '403 Forbidden', 403
-    return send_from_directory(os.path.join(UPLOAD_FOLDER, username), img_name)
+    response = make_response(send_from_directory(os.path.join(UPLOAD_FOLDER, username), img_name))
+    response.headers['Content-Type'] = 'image/jpeg'
+    response.headers['Cache-Control'] = 'max-age=2592000'
+    return response
 
 
 @app.route('/img_show/<username>/<img_name>')
 def img_show(username, img_name):
     if session.get('role') != 'admin' and session.get('username') != username:
         return '403 Forbidden', 403
-    html = '<img src="/img/%s/%s" alt="%s" style="height:100%%; width: auto;">' % (username, img_name, img_name)
-    return Markup(html)
+    html = Markup(f'<img src="/img/{username}/{img_name}" alt="{img_name}" style="height:100%; width: auto;">')
+    response = make_response(html)
+    response.headers['Content-Type'] = 'text/html'
+    response.headers['Cache-Control'] = 'max-age=2592000'
+    return response
 
 
 if __name__ == '__main__':
