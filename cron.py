@@ -72,23 +72,25 @@ def job():
         set_history(task['id'], 'running')
     for i, task in enumerate(running):
         username = task['username']
-        test_type = task['test_type']
-        test_method = task['test_method']
-        test_times = task['test_times']
-        test_result = task['test_result']
-        test_img_path = task['test_img_path']
-        test_rimg_name = task['test_rimg_name']
+        type_ = task['test_type']
+        method = task['test_method']
+        times = task['test_times']
+        result = task['test_result']
+        img_path = task['test_cps_path']
+        rimg_name = task['test_rimg_name']
 
         user_info = get_user_info(username)
         password = user_info['password']
         name = user_info['name']
 
-        ag = AgUpload(
-            username, password, name, test_type, test_method, test_times, test_result, test_img_path, test_rimg_name
-        )
-        status, result = ag.upload()
+        try:
+            ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name)
+            status, result = ag.upload()
+        except Exception as e:
+            logging.error(e)
+            status, result = 'error', f'运行时错误\n\n{e}'
         set_history(task['id'], status, time.time())
-        title = f'{username[-4:]}第{test_times}次{status_map[status]}'
+        title = f'{username[-4:]}第{times}次{status_map[status]}'
         user_config = get_user_config(username, ['api_type', 'api_key'])
         if not user_config:
             user_config = get_user_config('admin', ['api_type', 'api_key'])

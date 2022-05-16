@@ -24,6 +24,7 @@ status_map = {
     'fail': '上传失败',
     'uploaded': '已上传过',
     'deleted': '已删除',
+    'error': '运行时错误',
 }
 
 
@@ -41,7 +42,7 @@ def get_time():
 
 def get_img_str(username, img_path):
     if not img_path:
-        img_str = '无'
+        img_str = '-'
     else:
         img_path = './img_show/%s/%s' % (username, img_path.replace('\\', '/').split('/')[-1])
         img_str = f'<a target="_blank" href="{img_path}">查看</a>'

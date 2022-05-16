@@ -212,7 +212,8 @@ def history():
             'success': '#28a745',
             'fail': '#dc3545',
             'uploaded': '#007bff',
-            'deleted': '#6c757d'
+            'deleted': '#6c757d',
+            'error': '#dc3545',
         }
         role = session.get('role')
         if role == 'admin':
