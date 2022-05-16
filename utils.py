@@ -227,7 +227,7 @@ def img_proc(img_path, transform=False, watermark=None):
         width, height = cur_img.size
         draw = ImageDraw.Draw(cur_img)
         font_path = os.path.join(abs_path, 'src/font/NotoSansSC-Regular.otf')
-        font_pt = int(height * 0.12 * 72 / 96)
+        font_pt = int(min(width, height) * 0.12 * 72 / 96)
         wm_font = ImageFont.truetype(font_path, font_pt)
         wm_width, wm_height = wm_font.getsize(watermark)
         wm_left = int((width - wm_width) / 4)

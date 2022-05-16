@@ -123,6 +123,13 @@
         </label>
         <br><span style="font-size: 0.8em">大小不限，上传时自动压缩</span>
     </p>
+    <p id="img_watermark_form">
+        <label>
+            <input id="img_watermark" type="checkbox" name="img_watermark" value="1">
+        </label>
+        <label for="img_watermark">添加时间水印</label>
+        <br><label for="img_watermark" style="font-size: 0.8em">为图片添加计划时间水印，可预览及直接分享</label>
+    </p>
     <p id="img_transform_form">
         <label>
             <input id="img_transform" type="checkbox" name="img_transform" value="1">
@@ -154,10 +161,12 @@
         if (this.checked) {
             document.getElementById("img_upload_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
             document.getElementById("img_transform_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
+            document.getElementById("img_watermark_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
             document.getElementById("random_img_warning").style.opacity = "1";
         } else {
             document.getElementById("img_upload_form").setAttribute("style", "");
             document.getElementById("img_transform_form").setAttribute("style", "");
+            document.getElementById("img_watermark_form").setAttribute("style", "");
             document.getElementById("random_img_warning").style.opacity = "0";
         }
     }

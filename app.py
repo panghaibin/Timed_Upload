@@ -1,5 +1,6 @@
 import os
 import time
+import random
 import shutil
 import sqlite3
 import logging
@@ -165,6 +166,17 @@ def antigen_form():
     img_ = request.files.get('image')
     rimg_name = img_.filename
     suffix = rimg_name.split('.')[-1]
+
+    try:
+        test_date_time = datetime.strptime(f'2022-{month}-{day} {hour}:{minute}', '%Y-%m-%d %H:%M')
+    except Exception as e:
+        logging.error(e)
+        return render_template(
+            'antigen-form.html',
+            msg=Markup(f'日期格式错误，<a href="/antigen">返回重新上传</a>')
+        ), 400
+    test_timestamp = time.mktime(test_date_time.timetuple())
+
     if ('.' not in rimg_name or suffix not in suffix_list) and not random_img:
         return render_template(
             'antigen-form.html',
@@ -182,12 +194,17 @@ def antigen_form():
         test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
         img_.save(test_img_path)
         transform_img = request.form.get('img_transform') == '1'
+        watermark_img = request.form.get('img_watermark') == '1'
         cps_required = os.path.getsize(test_img_path) > 3 * 1024 * 1024
-        if not transform_img and not cps_required:
+        if not transform_img and not cps_required and not watermark_img:
             test_cps_path = test_img_path
         else:
+            if watermark_img:
+                random_min = random.randint(1, 5)
+                t = test_date_time - timedelta(minutes=random_min)
+                watermark_img = f'{t.month}/{t.day} {t.hour}:{t.minute}'
             try:
-                test_cps_path = img_proc(test_img_path, transform=transform_img)
+                test_cps_path = img_proc(test_img_path, transform=transform_img, watermark=watermark_img)
             except Exception as e:
                 logging.error(e)
                 return render_template(
@@ -202,15 +219,6 @@ def antigen_form():
         os.remove(test_img_path)
         test_img_path = ''
 
-    try:
-        test_date_time = datetime.strptime(f'2022-{month}-{day} {hour}:{minute}', '%Y-%m-%d %H:%M')
-    except Exception as e:
-        logging.error(e)
-        return render_template(
-            'antigen-form.html',
-            msg=Markup(f'日期格式错误，<a href="/antigen">返回重新上传</a>')
-        ), 400
-    test_timestamp = time.mktime(test_date_time.timetuple())
     modify_db(
         'insert into history '
         '(username, schedule_time, test_type, test_method, test_times, test_result, '
