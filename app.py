@@ -326,10 +326,15 @@ def account():
     if 'username' not in session:
         return redirect(url_for('login'))
     username = session['username']
-    name = query_db('select name from users where username = ?', [username], one=True)['name']
+    name = query_db('select name from users where username = ?;', [username], one=True)['name']
     users = session.get('users', [])
+    users_name = [
+        {'username': u['username'], 'name': u['name']}
+        for u in query_db('select username, name from users where username in (%s);' % ','.join(['?'] * len(users)),
+                          users)
+    ]
     if request.method == 'GET':
-        return render_template('account.html', username=username, name=name, users=users)
+        return render_template('account.html', username=username, name=name, users=users_name)
 
     action = request.form.get('action')
     value = request.form.get('value')
