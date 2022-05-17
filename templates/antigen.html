@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-计划任务上传 | <a href="history">计划任务记录</a> | <a href="logout">退出</a>
-<form action="./antigen-form" method="post" enctype="multipart/form-data">
+计划任务上传 | <a href="{{ url_for('history') }}">计划任务记录</a> | <a href="{{ url_for('account') }}">账户管理</a>
+<form action="{{ url_for('antigen_form') }}" method="post" enctype="multipart/form-data">
     <p>学号：{{ username }}</p>
     <p>姓名：{{ name }}</p>
     <p><label>类型：</label>

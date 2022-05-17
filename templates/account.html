@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,user-scalable=no" name="viewport">
+    <title>账户管理</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+<a href="{{ url_for('antigen') }}">计划任务上传</a> | <a href="{{ url_for('history') }}">计划任务记录</a> | 账户管理
+    <p>学号：{{ username }}</p>
+    <p>姓名：{{ name }}</p>
+    <p>通知设置</p>
+    <form action="{{ url_for('account') }}" method="post">
+{#        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">#}
+
+    </form>
+
+</body>
+</html>

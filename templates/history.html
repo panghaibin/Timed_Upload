@@ -48,7 +48,7 @@
     </style>
 </head>
 <body>
-<a href="antigen">计划任务上传</a> | 计划任务记录 | <a href="logout">退出</a>
+<a href="{{ url_for('antigen') }}">计划任务上传</a> | 计划任务记录 | <a href="{{ url_for('account') }}">账户管理</a>
 <p>{{ username }}的计划任务记录</p>
 <p>
     <button onclick="location.reload();">刷新</button>

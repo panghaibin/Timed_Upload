@@ -318,6 +318,14 @@ def history():
         return redirect(url_for('history'))
 
 
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    return render_template('account.html', username=username)
+
+
 @app.route('/img/<username>/<img_name>')
 def img(username, img_name):
     if session.get('role') != 'admin' and session.get('username') != username:
