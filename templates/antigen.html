@@ -39,7 +39,7 @@
     <p>
         <label>次数：</label>
         <label>
-            <input id="first" type="radio" name="test_times" value="1" checked>
+            <input id="first" type="radio" name="test_times" value="1">
         </label>
         <label for="first">第1次</label>
         <label>
@@ -114,7 +114,7 @@
     <p id="img_upload_form">
         <label>图片：</label>
         <label>
-            <input id="image" type="file" name="image">
+            <input id="image" type="file" name="image" required>
         </label>
         <br><span style="font-size: 0.8em">大小不限，上传时自动压缩</span>
     </p>
@@ -151,14 +151,24 @@
 </form>
 </body>
 <script>
+    // 先获取时间，12点前 first 选中，否则 second 选中
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour < 12 || hour > 22) {
+        document.getElementById("first").checked = true;
+    } else {
+        document.getElementById("second").checked = true;
+    }
     // 若 random_img 被选中，则隐藏 image 和 img_transform
     document.getElementById("random_img").onclick = function () {
         if (this.checked) {
+            document.getElementById("image").required = false;
             document.getElementById("img_upload_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
             document.getElementById("img_transform_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
             document.getElementById("img_watermark_form").setAttribute("style", "opacity: 0.4; pointer-events: none;");
             document.getElementById("random_img_warning").style.opacity = "1";
         } else {
+            document.getElementById("image").required = true;
             document.getElementById("img_upload_form").setAttribute("style", "");
             document.getElementById("img_transform_form").setAttribute("style", "");
             document.getElementById("img_watermark_form").setAttribute("style", "");
