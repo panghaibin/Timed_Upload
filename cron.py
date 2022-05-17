@@ -2,10 +2,10 @@ import os
 import time
 import sqlite3
 import logging
-from utils import AgUpload, get_config, abs_path, send_msg, status_map
+from utils import AgUpload, get_config, abs_path, send_msg, status_map, config_path
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-app_config = get_config('config.yml')
+app_config = get_config(os.path.join(abs_path, config_path))
 DATABASE = os.path.join(abs_path, app_config['DATABASE'])
 
 

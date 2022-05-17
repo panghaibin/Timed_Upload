@@ -16,6 +16,7 @@ from requests.packages.urllib3.util.retry import Retry
 from PIL import Image, ImageOps, ImageEnhance, ImageFont, ImageDraw
 
 abs_path = os.path.split(os.path.realpath(__file__))[0]
+config_path = 'config.yml'
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 status_map = {
     'pending': '等待上传',
@@ -33,7 +34,7 @@ role_map = {
 
 
 def get_config(config_file):
-    with open(os.path.join(abs_path, config_file), 'r', encoding='utf-8') as f:
+    with open(config_file, 'r', encoding='utf-8') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config
 

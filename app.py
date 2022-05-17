@@ -8,7 +8,8 @@ from datetime import datetime
 from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
-from utils import abs_path, get_time, get_config, status_map, img_proc, get_img_str, get_random_img, role_map
+from utils import abs_path, get_time, get_config, status_map, img_proc, get_img_str, get_random_img, config_path, \
+    role_map
 from flask import send_from_directory, render_template, make_response, redirect, url_for, Flask, Markup, request, g, \
     session
 
@@ -32,7 +33,7 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-app_config = get_config('config.yml')
+app_config = get_config(os.path.join(abs_path, config_path))
 DATABASE = os.path.join(abs_path, app_config['DATABASE'])
 UPLOAD_FOLDER = os.path.join(abs_path, app_config['UPLOAD_FOLDER'])
 RANDOM_IMG_FOLDER = os.path.join(abs_path, app_config['RANDOM_IMG_FOLDER'])
