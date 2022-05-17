@@ -37,6 +37,45 @@
         <label for="throat">口腔</label>
     </p>
     <p>
+        <label>快速选择：</label>
+        <label>
+            <input id="today_first" type="radio" name="quick" value="1" onclick="select_plan(1)">
+        </label>
+        <label for="today_first">今日(<span id="today_first_day"></span>) 第1次</label>
+            <label style="padding-left: 1.5em">
+                <input id="today_second" type="radio" name="quick" value="2" onclick="select_plan(2)">
+            </label>
+            <label for="today_second">第2次</label>
+    </p>
+{#    <p>#}
+{#        <span style="padding-left: 5.3em">#}
+{#            <label>#}
+{#                <input id="today_second" type="radio" name="quick" value="1" onclick="select_plan(2)">#}
+{#            </label>#}
+{#            <label for="today_second">今日(<span id="today_second_day"></span>) 第2次</label>#}
+{#        </span>#}
+{#    </p>#}
+    <p>
+        <span style="padding-left: 5.3em">
+            <label>
+                <input id="tmr_first" type="radio" name="quick" value="3" onclick="select_plan(3)">
+            </label>
+            <label for="tmr_first">明日(<span id="tmr_first_day"></span>) 第1次</label>
+            <label style="padding-left: 1.5em">
+                <input id="tmr_second" type="radio" name="quick" value="4" onclick="select_plan(4)">
+            </label>
+            <label for="tmr_second">第2次</label>
+        </span>
+    </p>
+{#    <p>#}
+{#        <span style="padding-left: 5.3em">#}
+{#            <label>#}
+{#                <input id="tmr_second" type="radio" name="quick" value="1" onclick="select_plan(4)">#}
+{#            </label>#}
+{#            <label for="tmr_second">明日(<span id="tmr_second_day"></span>) 第2次</label>#}
+{#        </span>#}
+{#    </p>#}
+    <p>
         <label>次数：</label>
         <label>
             <input id="first" type="radio" name="test_times" value="1">
@@ -61,7 +100,7 @@
             /
             <select name="month" style="width: 3.5em">
                 {% for m in month_list %}
-                    <option value="{{ m }}"
+                    <option id="month_{{ m }}" value="{{ m }}"
                             {% if m == month %}
                             selected
                             {% endif %}
@@ -71,7 +110,7 @@
             /
             <select name="day" style="width: 3.5em">
                 {% for d in day_list %}
-                    <option value="{{ d }}"
+                    <option id="day_{{ d }}" value="{{ d }}"
                             {% if d == day %}
                             selected
                             {% endif %}
@@ -81,7 +120,7 @@
             -
             <select name="hour" style="width: 3.5em">
                 {% for h in hour_list %}
-                    <option value="{{ h }}"
+                    <option id="hour_{{ h }}" value="{{ h }}"
                             {% if h == hour %}
                             selected
                             {% endif %}
@@ -146,19 +185,55 @@
         </label>
     </p>
     <p>
-        <input type="submit" value="提交">
+        <input type="submit" value="提   交">
     </p>
 </form>
 </body>
 <script>
     // 先获取时间，12点前 first 选中，否则 second 选中
-    const now = new Date();
+    let now = new Date();
+    const today_month = now.getMonth() + 1;
+    const today_day = now.getDate();
+    const today_date = today_month + '-' + today_day;
+    document.getElementById("today_first_day").innerText = today_date.toString();
+    {#document.getElementById("today_second_day").innerText = today_date.toString();#}
+    let tmr = now
+    tmr.setDate(tmr.getDate() + 1);
+    const tmr_month = tmr.getMonth() + 1;
+    const tmr_day = tmr.getDate();
+    const tmr_date = tmr_month + '-' + tmr_day;
+    document.getElementById("tmr_first_day").innerText = tmr_date.toString();
+    {#document.getElementById("tmr_second_day").innerText = tmr_date.toString();#}
+
+    /*
     const hour = now.getHours();
     if (hour < 12 || hour > 22) {
         document.getElementById("first").checked = true;
     } else {
         document.getElementById("second").checked = true;
     }
+    */
+
+    function select_plan(plan_id) {
+        if (plan_id === 1 || plan_id === 3) {
+            document.getElementById("first").checked = true;
+            document.getElementById("second").checked = false;
+            document.getElementById("hour_7").selected = true;
+        } else if (plan_id === 2 || plan_id === 4) {
+            document.getElementById("first").checked = false;
+            document.getElementById("second").checked = true;
+            document.getElementById("hour_15").selected = true;
+        }
+
+        if (plan_id === 1 || plan_id === 2) {
+            document.getElementById("month_" + today_month).selected = true;
+            document.getElementById("day_" + today_day).selected = true;
+        } else if (plan_id === 3 || plan_id === 4) {
+            document.getElementById("month_" + tmr_month).selected = true;
+            document.getElementById("day_" + tmr_day).selected = true;
+        }
+    }
+
     // 若 random_img 被选中，则隐藏 image 和 img_transform
     document.getElementById("random_img").onclick = function () {
         if (this.checked) {
