@@ -312,12 +312,15 @@ def history():
         if username != form_username or action is None:
             return '403 Forbidden', 403
         if session.get('role') == 'admin':
-            query = 'update history set status = ? where username = ? or ('
+            modify_db(
+                'update history set status = ? where id in (%s)' % ','.join('?' * len(delete_list)),
+                [action] + delete_list
+            )
         else:
-            query = 'update history set status = ? where username = ? and ('
-        query += ' or '.join(['id = ?'] * len(delete_list))
-        query += ')'
-        modify_db(query, [action, username] + delete_list)
+            modify_db(
+                'update history set status = ? where username = ? and id in (%s)' % ','.join('?' * len(delete_list)),
+                [action, username] + delete_list
+            )
         return redirect(url_for('history'))
 
 
