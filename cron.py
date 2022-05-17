@@ -66,10 +66,11 @@ def job():
     pending = get_history(status='pending')
     running = []
     for task in pending:
-        if task['schedule_time'] > time.time():
-            continue
-        running.append(task)
-        set_history(task['id'], 'running')
+        if task['schedule_time'] <= time.time():
+            running.append(task)
+            set_history(task['id'], 'running')
+            # 暂时先只一个任务
+            break
     for i, task in enumerate(running):
         username = task['username']
         type_ = task['test_type']
