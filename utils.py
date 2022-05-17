@@ -26,6 +26,10 @@ status_map = {
     'deleted': '已删除',
     'error': '运行时错误',
 }
+role_map = {
+    0: 'user',
+    1: 'admin',
+}
 
 
 def get_config(config_file):

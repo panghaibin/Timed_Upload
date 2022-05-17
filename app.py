@@ -8,7 +8,7 @@ from datetime import datetime
 from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
-from utils import abs_path, get_time, get_config, status_map, img_proc, get_img_str, get_random_img
+from utils import abs_path, get_time, get_config, status_map, img_proc, get_img_str, get_random_img, role_map
 from flask import send_from_directory, render_template, make_response, redirect, url_for, Flask, Markup, request, g, \
     session
 
@@ -105,11 +105,14 @@ def login():
         user_in_db = query_db('select password, role_id from users where username = ?', [username], one=True)
         if user_in_db is not None and password == user_in_db.get('password'):
             session['username'] = username
-            if user_in_db.get('role_id') == 1:
-                session['role'] = 'admin'
+            users = session.get('users', [])
+            users.append(username)
+            users = list(set(users))
+            session['users'] = users
+            role = role_map.get(user_in_db.get('role_id'))
+            session['role'] = role
+            if role == 'admin':
                 return redirect(url_for('history'))
-            else:
-                session['role'] = 'user'
             return redirect(url_for('antigen'))
         return render_template('login.html', msg='密码错误或用户不存在，请联系管理员', username=username)
     return render_template('login.html')
@@ -323,7 +326,33 @@ def account():
     if 'username' not in session:
         return redirect(url_for('login'))
     username = session['username']
-    return render_template('account.html', username=username)
+    name = query_db('select name from users where username = ?', [username], one=True)['name']
+    users = session.get('users', [])
+    if request.method == 'GET':
+        return render_template('account.html', username=username, name=name, users=users)
+
+    action = request.form.get('action')
+    value = request.form.get('value')
+    if action == 'switch':
+        if value not in users:
+            return '403 Forbidden', 403
+        session['username'] = value
+        role_id = query_db('select role_id from users where username = ?', [value], one=True)['role_id']
+        role = role_map.get(role_id)
+        session['role'] = role
+        return redirect(url_for('account'))
+    if action == 'logout':
+        users.remove(value)
+        session['users'] = users
+        if not users:
+            session.clear()
+            return redirect(url_for('login'))
+        if username == value:
+            session['username'] = users[0]
+            role_id = query_db('select role_id from users where username = ?', [users[0]], one=True)['role_id']
+            role = role_map.get(role_id)
+            session['role'] = role
+        return redirect(url_for('account'))
 
 
 @app.route('/img/<username>/<img_name>')

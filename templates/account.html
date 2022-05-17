@@ -8,13 +8,94 @@
 </head>
 <body>
 <a href="{{ url_for('antigen') }}">计划任务上传</a> | <a href="{{ url_for('history') }}">计划任务记录</a> | 账户管理
-    <p>学号：{{ username }}</p>
-    <p>姓名：{{ name }}</p>
-    <p>通知设置</p>
-    <form action="{{ url_for('account') }}" method="post">
-{#        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">#}
+{#<hr>#}
+<p style="font-weight: bold">账户信息</p>
+<p>学号：{{ username }}</p>
+<p>姓名：{{ name }}</p>
+<form id="a-form" action="{{ url_for('account') }}" method="post">
+    <input id="a-action" type="hidden" name="action">
+    <input id="a-value" type="hidden" name="value">
+</form>
 
-    </form>
+<!--
+<hr>
+    {#  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">#}
+    <p style="font-weight: bold">填报结果推送设置</p>
+    {#    <p>#}
+    {#        <label>#}
+    {#            填报结果推送#}
+    {#        </label>#}
+    {#        <label>#}
+    {#            <input type="radio" name="notify_on" value="1">#}
+    {#        </label>#}
+    {#        <label>#}
+    {#            开启#}
+    {#        </label>#}
+    {#        <label>#}
+    {#            <input type="radio" name="notify_on" value="0" checked>#}
+    {#        </label>#}
+    {#        <label>#}
+    {#            关闭#}
+    {#        </label>#}
+    {#    </p>#}
+    <p>
+        <label>
+            推送方式
+        </label>
+        <label>
+            <select name="notify_type">
+                {% for type in notify_types %}
+                    <option value="{{ type.id }}" {{ type.id == notify_type and 'selected' or '' }}>{{ type.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </p>
+    <p>
+        <label>
+            推送密钥
+        </label>
+        <label>
+            <input type="text" name="notify_key" value="{{ notify_key }}">
+        </label>
+    </p>
+-->
 
+<hr>
+<p style="font-weight: bold">多用户管理</p>
+<table>
+    <tr>
+        <td>学号</td>
+        <td colspan="2" style="text-align: center">操作</td>
+    </tr>
+    {% for u in users %}
+        <tr>
+            <td>
+                {{ u }}
+            </td>
+            <td>
+                {% if username == u %}
+                    当前用户
+                {% else %}
+                    <a href="javascript:void(0)" onclick="account_action('switch', '{{ u }}')">切换</a>
+                {% endif %}
+            </td>
+            <td>
+                <a href="javascript:void(0)" onclick="account_action('logout', '{{ u }}')">登出</a>
+            </td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="3" style="text-align: center">
+            <a href="{{ url_for('login') }}">添加用户</a>
+        </td>
+    </tr>
+</table>
+<script>
+    function account_action(action, value) {
+        document.getElementById('a-action').value = action;
+        document.getElementById('a-value').value = value;
+        document.getElementById('a-form').submit();
+    }
+</script>
 </body>
 </html>
