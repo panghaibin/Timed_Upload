@@ -236,7 +236,7 @@ def history():
         return redirect(url_for('login'))
     username = session['username']
     if request.method == 'GET':
-        thead = ['状态', '计划时间', '实际完成', '原图', '处理后', '次数', '类型', '方式', '结果', '操作', ]
+        thead = ['当前状态', '计划时间', '实际完成', '处理后图像', '原图', '次数', '类型', '方式', '结果', '操作', ]
         status_color_map = {
             'pending': '#ffc107',
             'running': '#ffc107',
@@ -269,8 +269,8 @@ def history():
             h_username = user_history.get('username')
             img_path = user_history.get('test_img_path')
             cps_path = user_history.get('test_cps_path')
-            img_str = Markup(get_img_str(h_username, img_path))
-            cps_str = Markup(get_img_str(h_username, cps_path))
+            img_str = Markup(get_img_str(h_username, img_path, 'a'))
+            cps_str = Markup(get_img_str(h_username, cps_path, 'img'))
             update_time = user_history.get('update_time')
             if update_time is None:
                 update_time = '-'

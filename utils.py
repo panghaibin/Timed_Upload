@@ -40,12 +40,18 @@ def get_time():
     return t
 
 
-def get_img_str(username, img_path):
-    if not img_path:
-        img_str = '-'
-    else:
-        img_path = './img_show/%s/%s' % (username, img_path.replace('\\', '/').split('/')[-1])
-        img_str = f'<a target="_blank" href="{img_path}">查看图像</a>'
+def get_img_str(username, img_path, type_=None):
+    img_str = '-'
+    img_view_path = './img_show/%s/%s' % (username, img_path.replace('\\', '/').split('/')[-1])
+    if not img_path or not type_:
+        return img_str
+    if type_ == 'a':
+        img_str = f'<a target="_blank" href="{img_view_path}">查看</a>'
+    elif type_ == 'img':
+        img_path = './img/%s/%s' % (username, img_path.replace('\\', '/').split('/')[-1])
+        img_str = f'<a target="_blank" href="{img_view_path}">' \
+                  f'<img src="{img_path}" alt="查看" style="/*width:30px;*/height:35px;">' \
+                  f'</a>'
     return img_str
 
 
