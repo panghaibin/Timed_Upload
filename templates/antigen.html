@@ -42,39 +42,44 @@
             <input id="today_first" type="radio" name="quick" value="1" onclick="select_plan(1)">
         </label>
         <label for="today_first">今日(<span id="today_first_day"></span>) 第1次</label>
-            <label style="padding-left: 1.5em">
-                <input id="today_second" type="radio" name="quick" value="2" onclick="select_plan(2)">
-            </label>
-            <label for="today_second">第2次</label>
+        <label style="padding-left: 2em">
+            <input id="today_second" type="radio" name="quick" value="2" onclick="select_plan(2)">
+        </label>
+        <label for="today_second">第2次</label>
+        <br>
+        <label id="quick_note" for="today_first"
+               style="padding-left: 7rem;font-size: 0.8em;display: none">
+            提示：现在是<span id="quick_note_date"></span>的凌晨
+        </label>
     </p>
-{#    <p>#}
-{#        <span style="padding-left: 5.3em">#}
-{#            <label>#}
-{#                <input id="today_second" type="radio" name="quick" value="1" onclick="select_plan(2)">#}
-{#            </label>#}
-{#            <label for="today_second">今日(<span id="today_second_day"></span>) 第2次</label>#}
-{#        </span>#}
-{#    </p>#}
+    {#    <p>#}
+    {#        <span style="padding-left: 5.3em">#}
+    {#            <label>#}
+    {#                <input id="today_second" type="radio" name="quick" value="1" onclick="select_plan(2)">#}
+    {#            </label>#}
+    {#            <label for="today_second">今日(<span id="today_second_day"></span>) 第2次</label>#}
+    {#        </span>#}
+    {#    </p>#}
     <p>
         <span style="padding-left: 5.3em">
             <label>
                 <input id="tmr_first" type="radio" name="quick" value="3" onclick="select_plan(3)">
             </label>
             <label for="tmr_first">明日(<span id="tmr_first_day"></span>) 第1次</label>
-            <label style="padding-left: 1.5em">
+            <label style="padding-left: 2em">
                 <input id="tmr_second" type="radio" name="quick" value="4" onclick="select_plan(4)">
             </label>
             <label for="tmr_second">第2次</label>
         </span>
     </p>
-{#    <p>#}
-{#        <span style="padding-left: 5.3em">#}
-{#            <label>#}
-{#                <input id="tmr_second" type="radio" name="quick" value="1" onclick="select_plan(4)">#}
-{#            </label>#}
-{#            <label for="tmr_second">明日(<span id="tmr_second_day"></span>) 第2次</label>#}
-{#        </span>#}
-{#    </p>#}
+    {#    <p>#}
+    {#        <span style="padding-left: 5.3em">#}
+    {#            <label>#}
+    {#                <input id="tmr_second" type="radio" name="quick" value="1" onclick="select_plan(4)">#}
+    {#            </label>#}
+    {#            <label for="tmr_second">明日(<span id="tmr_second_day"></span>) 第2次</label>#}
+    {#        </span>#}
+    {#    </p>#}
     <p>
         <label>次数：</label>
         <label>
@@ -190,20 +195,25 @@
 </form>
 </body>
 <script>
-    // 先获取时间，12点前 first 选中，否则 second 选中
     let now = new Date();
     const today_month = now.getMonth() + 1;
     const today_day = now.getDate();
-    const today_date = today_month + '-' + today_day;
+    const today_date = today_month + '/' + today_day;
     document.getElementById("today_first_day").innerText = today_date.toString();
     {#document.getElementById("today_second_day").innerText = today_date.toString();#}
     let tmr = now
     tmr.setDate(tmr.getDate() + 1);
     const tmr_month = tmr.getMonth() + 1;
     const tmr_day = tmr.getDate();
-    const tmr_date = tmr_month + '-' + tmr_day;
+    const tmr_date = tmr_month + '/' + tmr_day;
     document.getElementById("tmr_first_day").innerText = tmr_date.toString();
     {#document.getElementById("tmr_second_day").innerText = tmr_date.toString();#}
+
+    const hour = now.getHours();
+    if (hour < 6) {
+        document.getElementById('quick_note_date').innerText = today_date.toString();
+        document.getElementById('quick_note').style.display = '';
+    }
 
     /*
     const hour = now.getHours();
