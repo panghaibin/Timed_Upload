@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta content="width=device-width,user-scalable=no" name="viewport">
     <title>计划任务</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
-<style>
-    a {
-        text-decoration: none;
-        color: blue;
-    }
-</style>
 <body>
 计划任务上传 | <a href="history">计划任务记录</a> | <a href="logout">退出</a>
 <form action="./antigen-form" method="post" enctype="multipart/form-data">

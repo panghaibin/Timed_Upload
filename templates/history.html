@@ -4,85 +4,49 @@
     <meta charset="UTF-8">
     <meta content="width=device-width,user-scalable=no" name="viewport">
     <title>计划任务记录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        @media only screen and (max-width: 830px),
+        (min-device-width: 830px) and (max-device-width: 830px) {
+
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr, tr:nth-of-type(odd) {
+                background: #ffffff;
+                border: 1px solid #ccc;
+            }
+
+            td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 30%;
+            }
+
+            td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+            {#width: 30%;#} padding-right: 10px;
+                white-space: nowrap;
+            }
+
+        {% for th in thead %}
+            td:nth-of-type({{ loop.index }}):before {
+                content: "{{ th }}";
+            }
+        {% endfor %}
+        }
+    </style>
 </head>
-<style>
-    html, body {
-        min-width: 350px;
-    }
-
-    a {
-        text-decoration: none;
-        color: blue;
-    }
-
-    table {
-        border-collapse: collapse;
-    }
-
-    tr:nth-of-type(odd) {
-        background: #eee;
-    }
-
-    th {
-        background: #333;
-        color: white;
-        font-weight: bold;
-    }
-
-    td, th {
-        padding: 6px;
-        border: 1px solid #ccc;
-        text-align: left;
-    }
-
-    @media only screen and (max-width: 830px),
-    (min-device-width: 830px) and (max-device-width: 830px) {
-
-        /* Force table to not be like tables anymore */
-        table, thead, tbody, th, td, tr {
-            display: block;
-        }
-
-        /* Hide table headers (but not display: none;, for accessibility) */
-        thead tr {
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-        }
-
-        tr, tr:nth-of-type(odd) {
-            background: #ffffff;
-            border: 1px solid #ccc;
-        }
-
-        td {
-            /* Behave  like a "row" */
-            border: none;
-            border-bottom: 1px solid #eee;
-            position: relative;
-            padding-left: 30%;
-        }
-
-        td:before {
-            /* Now like a table header */
-            position: absolute;
-            /* Top/left values mimic padding */
-            top: 6px;
-            left: 6px;
-        {#width: 30%;#} padding-right: 10px;
-            white-space: nowrap;
-        }
-
-        /*
-        Label the data
-        */
-    {% for th in thead %}
-        td:nth-of-type({{ loop.index }}):before {
-            content: "{{ th }}";
-        }
-    {% endfor %}
-    }
-</style>
 <body>
 <a href="antigen">计划任务上传</a> | 计划任务记录 | <a href="logout">退出</a>
 <p>{{ username }}的计划任务记录</p>

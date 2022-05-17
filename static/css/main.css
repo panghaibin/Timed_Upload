@@ -1,0 +1,28 @@
+html, body {
+    min-width: 350px;
+}
+
+a {
+    text-decoration: none;
+    color: blue;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr:nth-of-type(odd) {
+    background: #eee;
+}
+
+th {
+    background: #333;
+    color: white;
+    font-weight: bold;
+}
+
+td, th {
+    padding: 6px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
