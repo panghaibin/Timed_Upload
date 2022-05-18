@@ -74,7 +74,7 @@
                 <td>{{ item.username }}</td>
                 <td>{{ item.name }}</td>
             {% endif %}
-            <td><span style="color: {{ item.status_color }}">{{ item.status }}</span></td>
+            <td><span id="status_{{ item.id }}" style="color: {{ item.status_color }}">{{ item.status }}</span></td>
             <td>{{ item.sch_time }}</td>
             <td>{{ item.real_time }}</td>
             <td>{{ item.cps }}</td>
@@ -105,6 +105,11 @@
     }
 
     function edit_history(hid) {
+        let status = document.getElementById('status_' + hid).innerText;
+        if (status !== '等待上传') {
+            alert('只能编辑等待上传的计划');
+            return;
+        }
         document.getElementById('history').value = hid;
         document.getElementById('action').value = 'edit';
         document.getElementById('h-form').action = '{{ url_for('antigen_edit') }}';

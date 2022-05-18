@@ -8,7 +8,8 @@
 </head>
 <body>
 计划任务上传 | <a href="{{ url_for('history') }}">计划任务记录</a> | <a href="{{ url_for('account') }}">账户管理</a>
-<form action="{{ url_for('antigen_form') }}" method="post" enctype="multipart/form-data">
+<form id="h-form" action="{{ url_for('antigen_form') }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action" value="add">
     <p>学号：{{ username }}</p>
     <p>姓名：{{ name }}</p>
     <p><label>类型：</label>

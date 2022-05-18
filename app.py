@@ -180,6 +180,7 @@ def antigen_edit():
         type=type_map.get(h_detail.get('test_type')),
         method=method_map.get(h_detail.get('test_method')),
         test_times=test_times_map.get(h_detail.get('test_times')),
+        img=get_img_str(username, h_detail.get('test_cps_path'), 'url'),
     )
 
 
@@ -187,6 +188,9 @@ def antigen_edit():
 def antigen_form():
     if 'username' not in session:
         return redirect(url_for('login'))
+    action = request.form.get('action')
+    if action not in ['edit', 'add']:
+        return redirect(url_for('antigen'))
 
     type_map = {1: '抗原', 2: '核酸'}
     method_map = {1: '鼻腔拭子', 2: '鼻咽拭子', 3: '口腔拭子'}
@@ -204,71 +208,81 @@ def antigen_form():
     hour = request.form.get('hour')
     minute = request.form.get('minute')
 
-    random_img = request.form.get('random_img') == '1'
-    img_ = request.files.get('image')
-    rimg_name = img_.filename
-    suffix = rimg_name.split('.')[-1]
-
     try:
         test_date_time = datetime.strptime(f'2022-{month}-{day} {hour}:{minute}', '%Y-%m-%d %H:%M')
+        test_timestamp = time.mktime(test_date_time.timetuple())
     except Exception as e:
         logging.error(e)
         return render_template(
             'antigen-form.html',
-            msg=Markup(f'日期格式错误，<a href="/antigen">返回重新上传</a>')
+            msg=Markup(f'日期格式错误，<a href="javascript:void(0)" onclick="javascript:history.back(-1);">返回重新上传</a>')
         ), 400
-    test_timestamp = time.mktime(test_date_time.timetuple())
 
-    if ('.' not in rimg_name or suffix not in suffix_list) and not random_img:
-        return render_template(
-            'antigen-form.html',
-            msg=Markup('图片格式错误，<a href="/antigen">返回重新上传</a>')
-        ), 400
     if None in [type_, method, times, result, month, day, hour, minute]:
         return render_template(
             'antigen-form.html',
-            msg=Markup('请填写完整信息，<a href="/antigen">返回重新上传</a>')
+            msg=Markup('请填写完整信息，<a href="javascript:void(0)" onclick="javascript:history.back(-1);">返回重新上传</a>')
         ), 400
-    test_img_path = os.path.join(UPLOAD_FOLDER, username)
-    if not os.path.exists(test_img_path):
-        os.mkdir(test_img_path)
-    if not random_img:
-        test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
-        img_.save(test_img_path)
-        transform_img = request.form.get('img_transform') == '1'
-        watermark_img = request.form.get('img_watermark') == '1'
-        cps_required = os.path.getsize(test_img_path) > 3 * 1024 * 1024
-        if not transform_img and not cps_required and not watermark_img:
-            test_cps_path = test_img_path
-        else:
-            if watermark_img:
-                random_min = random.randint(1, 5)
-                t = test_date_time - timedelta(minutes=random_min)
-                watermark_img = f'{t.month}/{t.day} {t.hour}:{t.minute}'
-            try:
-                test_cps_path = img_proc(test_img_path, transform=transform_img, watermark=watermark_img)
-            except Exception as e:
-                logging.error(e)
-                return render_template(
-                    'antigen-form.html',
-                    msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>')
-                ), 500
-    else:
-        test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.jpg')
-        random_img_path = get_random_img(RANDOM_IMG_FOLDER)
-        shutil.copy(random_img_path, test_img_path)
-        test_cps_path = img_proc(test_img_path, transform=True)
-        os.remove(test_img_path)
-        test_img_path = ''
 
-    modify_db(
-        'insert into history '
-        '(username, schedule_time, test_type, test_method, test_times, test_result, '
-        'test_img_path, test_cps_path, test_rimg_name, status)'
-        'values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [username, test_timestamp, type_, method, times, result,
-         test_img_path, test_cps_path, rimg_name, 'pending']
-    )
+    if action == 'add':
+        random_img = request.form.get('random_img') == '1'
+        img_ = request.files.get('image')
+        rimg_name = img_.filename
+        suffix = rimg_name.split('.')[-1]
+
+        if ('.' not in rimg_name or suffix not in suffix_list) and not random_img:
+            return render_template(
+                'antigen-form.html',
+                msg=Markup('图片格式错误，<a href="/antigen">返回重新上传</a>')
+            ), 400
+
+        test_img_path = os.path.join(UPLOAD_FOLDER, username)
+        if not os.path.exists(test_img_path):
+            os.mkdir(test_img_path)
+        if not random_img:
+            test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.{suffix}')
+            img_.save(test_img_path)
+            transform_img = request.form.get('img_transform') == '1'
+            watermark_img = request.form.get('img_watermark') == '1'
+            cps_required = os.path.getsize(test_img_path) > 3 * 1024 * 1024
+            if not transform_img and not cps_required and not watermark_img:
+                test_cps_path = test_img_path
+            else:
+                if watermark_img:
+                    random_min = random.randint(1, 5)
+                    t = test_date_time - timedelta(minutes=random_min)
+                    watermark_img = f'{t.month}/{t.day} {t.hour}:{t.minute}'
+                try:
+                    test_cps_path = img_proc(test_img_path, transform=transform_img, watermark=watermark_img)
+                except Exception as e:
+                    logging.error(e)
+                    return render_template(
+                        'antigen-form.html',
+                        msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>')
+                    ), 500
+        else:
+            test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.jpg')
+            random_img_path = get_random_img(RANDOM_IMG_FOLDER)
+            shutil.copy(random_img_path, test_img_path)
+            test_cps_path = img_proc(test_img_path, transform=True)
+            os.remove(test_img_path)
+            test_img_path = ''
+
+        modify_db(
+            'insert into history '
+            '(username, schedule_time, test_type, test_method, test_times, test_result, '
+            'test_img_path, test_cps_path, test_rimg_name, status)'
+            'values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [username, test_timestamp, type_, method, times, result,
+             test_img_path, test_cps_path, rimg_name, 'pending']
+        )
+    elif action == 'edit':
+        history_id = int(request.form.get('history_id'))
+        modify_db(
+            'update history set '
+            'schedule_time = ?, test_type = ?, test_method = ?, test_times = ? where username = ? and id = ?',
+            [test_timestamp, type_, method, times, username, history_id]
+        )
     return redirect(url_for('history'))
 
 

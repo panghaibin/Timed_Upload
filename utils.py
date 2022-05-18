@@ -47,16 +47,19 @@ def get_time():
 
 def get_img_str(username, img_path, type_=None):
     img_str = '-'
-    img_view_path = './img_show/%s/%s' % (username, img_path.replace('\\', '/').split('/')[-1])
+    img_name = img_path.replace('\\', '/').split('/')[-1]
+    img_show_url = './img_show/%s/%s' % (username, img_name)
+    img_url = './img/%s/%s' % (username, img_name)
     if not img_path or not type_:
         return img_str
     if type_ == 'a':
-        img_str = f'<a target="_blank" href="{img_view_path}">查看</a>'
+        img_str = f'<a target="_blank" href="{img_show_url}">查看</a>'
     elif type_ == 'img':
-        img_path = './img/%s/%s' % (username, img_path.replace('\\', '/').split('/')[-1])
-        img_str = f'<a target="_blank" href="{img_view_path}">' \
-                  f'<img src="{img_path}" alt="查看" style="/*width:30px;*/height:35px;">' \
+        img_str = f'<a target="_blank" href="{img_show_url}">' \
+                  f'<img src="{img_url}" alt="查看" style="/*width:30px;*/height:35px;">' \
                   f'</a>'
+    elif type_ == 'url':
+        img_str = img_url
     return img_str
 
 

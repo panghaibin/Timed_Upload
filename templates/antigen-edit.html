@@ -12,7 +12,8 @@
 <a href="{{ url_for('history') }}">任务列表</a> > 修改计划任务
 |
 <a href="{{ url_for('account') }}">账户管理</a>
-<form action="{{ url_for('antigen_form') }}" method="post" enctype="multipart/form-data">
+<form id="h-form" action="{{ url_for('antigen_form') }}" method="post">
+    <input type="hidden" name="action" value="edit">
     <input type="hidden" name="history_id" value="{{ history_id }}">
     <p>学号：{{ username }}</p>
     <p>姓名：{{ name }}</p>
@@ -55,11 +56,13 @@
     <p>
         <label>次数选择：</label>
         <label>
-            <input id="first" type="radio" name="test_times" value="1" {{ test_times == 1 and 'checked' or '' }} required>
+            <input id="first" type="radio" name="test_times" value="1" {{ test_times == 1 and 'checked' or '' }}
+                   required>
         </label>
         <label for="first">第1次</label>
         <label style="padding-left: 3em">
-            <input id="second" type="radio" name="test_times" value="2" {{ test_times == 2 and 'checked' or '' }} required>
+            <input id="second" type="radio" name="test_times" value="2" {{ test_times == 2 and 'checked' or '' }}
+                   required>
         </label>
         <label for="second">第2次</label>
     </p>
@@ -107,6 +110,14 @@
                     >{{ "%02d"|format(m) }}</option>
                 {% endfor %}
             </select>
+        </label>
+    </p>
+    <p>
+        <label>处理后图像：</label>
+        <br>
+        <img src="{{ img }}" alt="处理后图像" style="width: 50%; margin: 0 auto;display: block">
+        <label style="font-size: 0.8em;">
+            如需修改图像，请返回删除记录后重新上传
         </label>
     </p>
     <p>
