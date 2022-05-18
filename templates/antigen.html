@@ -22,6 +22,17 @@
         <label for="pcr">核酸</label>
     </p>
     <p>
+        <label>结果：</label>
+        <label>
+            <input id="neg" type="radio" name="result" value="1" checked disabled>
+        </label>
+        <label for="neg">阴性</label>
+        <label>
+            <input id="pos" type="radio" name="result" value="2" disabled>
+        </label>
+        <label for="pos">阳性</label>
+    </p>
+    <p>
         <label>方式：</label>
         <label>
             <input id="nose" type="radio" name="method" value="1" checked>
@@ -143,17 +154,6 @@
                 {% endfor %}
             </select>
         </label>
-    </p>
-    <p>
-        <label>结果：</label>
-        <label>
-            <input id="neg" type="radio" name="result" value="1" checked>
-        </label>
-        <label for="neg">阴性</label>
-        <label>
-            <input id="pos" type="radio" name="result" value="2">
-        </label>
-        <label for="pos">阳性</label>
     </p>
     <p id="img_upload_form">
         <label>图片：</label>
