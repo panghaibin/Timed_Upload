@@ -95,7 +95,14 @@
 </body>
 <script>
     function del_history(hid) {
-        let confirm_msg = confirm('确定删除该上传计划？\n\n未上传的计划删除后将被取消\n已上传的计划删除后不会影响健康之路的记录');
+        let status = document.getElementById('status_' + hid).innerText;
+        let confirm_text = '确定删除该上传计划？';
+        if (status === '等待上传') {
+            confirm_text += '\n删除后该计划将被取消'
+        } else {
+            confirm_text += '\n已上传的计划删除后，不会影响健康之路的记录'
+        }
+        let confirm_msg = confirm(confirm_text);
         if (confirm_msg) {
             document.getElementById('history').value = hid;
             document.getElementById('action').value = 'delete';
@@ -107,7 +114,7 @@
     function edit_history(hid) {
         let status = document.getElementById('status_' + hid).innerText;
         if (status !== '等待上传') {
-            alert('只能编辑等待上传的计划');
+            alert('只能编辑尚未上传的计划');
             return;
         }
         document.getElementById('history').value = hid;
