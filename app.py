@@ -73,6 +73,9 @@ def modify_db(insert, args=()):
 
 @app.before_request
 def before_request():
+    if 'username' not in session and request.endpoint not in ['login', 'register']:
+        return redirect(url_for('login'))
+
     g.db = connect_db()
     session.permanent = True
 
@@ -121,9 +124,6 @@ def login():
 
 @app.route('/antigen', methods=['GET'])
 def antigen():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
     username = session['username']
     name = query_db('select name from users where username = ?', [username], one=True).get('name')
     t = get_time()
@@ -147,8 +147,6 @@ def antigen():
 
 @app.route('/antigen-edit/<history_id>', methods=['GET'])
 def antigen_edit(history_id):
-    if 'username' not in session:
-        return redirect(url_for('login'))
     if not history_id:
         return redirect(url_for('history'))
 
@@ -189,8 +187,6 @@ def antigen_edit(history_id):
 
 @app.route('/antigen-form', methods=['POST'])
 def antigen_form():
-    if 'username' not in session:
-        return redirect(url_for('login'))
     action = request.form.get('action')
     if action not in ['edit', 'add']:
         return redirect(url_for('antigen'))
@@ -291,8 +287,6 @@ def antigen_form():
 
 @app.route('/history', methods=['GET', 'POST'])
 def history():
-    if 'username' not in session:
-        return redirect(url_for('login'))
     username = session['username']
     if request.method == 'GET':
         thead = ['当前状态', '计划时间', '实际完成', '处理后图像', '原图', '次数', '类型', '方式', '结果', '操作', ]
@@ -385,8 +379,6 @@ def history():
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
-    if 'username' not in session:
-        return redirect(url_for('login'))
     username = session['username']
     name = query_db('select name from users where username = ?;', [username], one=True)['name']
     users = session.get('users', [])
