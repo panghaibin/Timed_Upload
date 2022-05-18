@@ -145,6 +145,44 @@ def antigen():
     )
 
 
+@app.route('/antigen-edit', methods=['POST'])
+def antigen_edit():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    if request.form.get('action') != 'edit':
+        return redirect(url_for('history'))
+
+    username = session['username']
+    history_id = request.form.get('history_id')
+    h_detail = query_db('select * from history where username = ? and id = ?', [username, history_id], one=True)
+    if h_detail is None:
+        return redirect(url_for('history'))
+
+    type_map = {'抗原': 1, '核酸': 2}
+    method_map = {'鼻腔拭子': 1, '鼻咽拭子': 2, '口腔拭子': 3}
+    test_times_map = {'1': 1, '2': 2}
+
+    name = query_db('select name from users where username = ?', [username], one=True).get('name')
+    t = datetime.fromtimestamp(h_detail.get('schedule_time'))
+    return render_template(
+        'antigen-edit.html',
+        username=session['username'],
+        name=name,
+        history_id=history_id,
+        month_list=[i for i in range(1, 13)],
+        month=t.month,
+        day_list=[i for i in range(1, 32)],
+        day=t.day,
+        hour_list=[i for i in range(0, 24)],
+        hour=t.hour,
+        minute_list=[i for i in range(0, 60, 5)],
+        minute=t.minute,
+        type=type_map.get(h_detail.get('test_type')),
+        method=method_map.get(h_detail.get('test_method')),
+        test_times=test_times_map.get(h_detail.get('test_times')),
+    )
+
+
 @app.route('/antigen-form', methods=['POST'])
 def antigen_form():
     if 'username' not in session:
@@ -307,7 +345,7 @@ def history():
         username = session['username']
         form_username = request.form.get('username')
         action = action_map.get(request.form.get('action'))
-        delete_list = request.form.getlist('history')
+        delete_list = request.form.getlist('history_id')
         if not delete_list:
             return redirect(url_for('history'))
         if username != form_username or action is None:

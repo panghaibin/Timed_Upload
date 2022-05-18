@@ -56,7 +56,7 @@
 <form id="h-form" action="" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
-    <input id="history" type="hidden" name="history" value="">
+    <input id="history" type="hidden" name="history_id" value="">
     <input id="action" type="hidden" name="action" value="">
 </form>
 <table>
@@ -85,6 +85,8 @@
             <td>{{ item.result }}</td>
             <td>
                 <a href="javascript:void(0)" onclick="del_history('{{ item.id }}')">删除</a>
+                |
+                <a href="javascript:void(0)" onclick="edit_history('{{ item.id }}')">编辑</a>
             </td>
         </tr>
     {% endfor %}
@@ -93,12 +95,20 @@
 </body>
 <script>
     function del_history(hid) {
-        let confirm_msg = confirm('确定删除该记录？');
+        let confirm_msg = confirm('确定删除该上传计划？\n\n未上传的计划删除后将被取消\n已上传的计划删除后不会影响健康之路的记录');
         if (confirm_msg) {
             document.getElementById('history').value = hid;
             document.getElementById('action').value = 'delete';
+            document.getElementById('h-form').action = '{{ url_for('history') }}';
             document.getElementById('h-form').submit();
         }
+    }
+
+    function edit_history(hid) {
+        document.getElementById('history').value = hid;
+        document.getElementById('action').value = 'edit';
+        document.getElementById('h-form').action = '{{ url_for('antigen_edit') }}';
+        document.getElementById('h-form').submit();
     }
 </script>
 </html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,user-scalable=no" name="viewport">
+    <title>修改计划任务</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+<a href="{{ url_for('antigen') }}">计划任务上传</a>
+|
+<a href="{{ url_for('history') }}">任务列表</a> > 修改计划任务
+|
+<a href="{{ url_for('account') }}">账户管理</a>
+<form action="{{ url_for('antigen_form') }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="history_id" value="{{ history_id }}">
+    <p>学号：{{ username }}</p>
+    <p>姓名：{{ name }}</p>
+    <p><label>类型：</label>
+        <label>
+            <input id="antigen" type="radio" name="type" value="1" {{ type == 1 and 'checked' or '' }}>
+        </label>
+        <label for="antigen">抗原</label>
+        <label>
+            <input id="pcr" type="radio" name="type" value="2" {{ type == 2 and 'checked' or '' }}>
+        </label>
+        <label for="pcr">核酸</label>
+    </p>
+    <p style="opacity: 0.6;pointer-events: none">
+        <label>结果：</label>
+        <label>
+            <input id="neg" type="radio" name="result" value="1" checked>
+        </label>
+        <label for="neg">阴性</label>
+        <label>
+            <input id="pos" type="radio" name="result" value="2">
+        </label>
+        <label for="pos">阳性</label>
+    </p>
+    <p>
+        <label>方式：</label>
+        <label>
+            <input id="nose" type="radio" name="method" value="1" {{ method == 1 and 'checked' or '' }}>
+        </label>
+        <label for="nose">鼻腔</label>
+        <label>
+            <input id="nose_throat" type="radio" name="method" value="2" {{ method == 2 and 'checked' or '' }}>
+        </label>
+        <label for="nose_throat">鼻咽</label>
+        <label>
+            <input id="throat" type="radio" name="method" value="3" {{ method == 3 and 'checked' or '' }}>
+        </label>
+        <label for="throat">口腔</label>
+    </p>
+    <p>
+        <label>次数选择：</label>
+        <label>
+            <input id="first" type="radio" name="test_times" value="1" {{ test_times == 1 and 'checked' or '' }} required>
+        </label>
+        <label for="first">第1次</label>
+        <label style="padding-left: 3em">
+            <input id="second" type="radio" name="test_times" value="2" {{ test_times == 2 and 'checked' or '' }} required>
+        </label>
+        <label for="second">第2次</label>
+    </p>
+    <p>
+        <label>计划时间：</label>
+        <label>
+            2022
+            /
+            <select name="month" style="width: 3.5em">
+                {% for m in month_list %}
+                    <option id="month_{{ m }}" value="{{ m }}"
+                            {% if m == month %}
+                            selected
+                            {% endif %}
+                    >{{ "%02d"|format(m) }}</option>
+                {% endfor %}
+            </select>
+            /
+            <select name="day" style="width: 3.5em">
+                {% for d in day_list %}
+                    <option id="day_{{ d }}" value="{{ d }}"
+                            {% if d == day %}
+                            selected
+                            {% endif %}
+                    >{{ "%02d"|format(d) }}</option>
+                {% endfor %}
+            </select>
+            -
+            <select name="hour" style="width: 3.5em">
+                {% for h in hour_list %}
+                    <option id="hour_{{ h }}" value="{{ h }}"
+                            {% if h == hour %}
+                            selected
+                            {% endif %}
+                    >{{ "%02d"|format(h) }}</option>
+                {% endfor %}
+            </select>
+            :
+            <select name="minute" style="width: 3.5em">
+                {% for m in minute_list %}
+                    <option value="{{ m }}"
+                            {% if m == minute %}
+                            selected
+                            {% endif %}
+                    >{{ "%02d"|format(m) }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </p>
+    <p>
+        <input type="submit" value="提   交">
+    </p>
+</form>
+</body>
+</html>
