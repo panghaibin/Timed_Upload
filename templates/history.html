@@ -79,7 +79,7 @@
             <td>{{ item.real_time }}</td>
             <td>{{ item.cps }}</td>
             <td>{{ item.img }}</td>
-            <td>{{ item.times }}</td>
+            <td>第{{ item.times }}次</td>
             <td>{{ item.type }}</td>
             <td>{{ item.method }}</td>
             <td>{{ item.result }}</td>
@@ -119,7 +119,7 @@
         }
         document.getElementById('history').value = hid;
         document.getElementById('action').value = 'edit';
-        document.getElementById('h-form').action = '{{ url_for('antigen_edit') }}';
+        document.getElementById('h-form').action = '{{ url_for('history') }}';
         document.getElementById('h-form').submit();
     }
 </script>

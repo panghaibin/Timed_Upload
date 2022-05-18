@@ -48,8 +48,8 @@ def get_time():
 def get_img_str(username, img_path, type_=None):
     img_str = '-'
     img_name = img_path.replace('\\', '/').split('/')[-1]
-    img_show_url = './img_show/%s/%s' % (username, img_name)
-    img_url = './img/%s/%s' % (username, img_name)
+    img_show_url = '/img_show/%s/%s' % (username, img_name)
+    img_url = '/img/%s/%s' % (username, img_name)
     if not img_path or not type_:
         return img_str
     if type_ == 'a':

@@ -145,15 +145,14 @@ def antigen():
     )
 
 
-@app.route('/antigen-edit', methods=['POST'])
-def antigen_edit():
+@app.route('/antigen-edit/<history_id>', methods=['GET'])
+def antigen_edit(history_id):
     if 'username' not in session:
         return redirect(url_for('login'))
-    if request.form.get('action') != 'edit':
+    if not history_id:
         return redirect(url_for('history'))
 
     username = session['username']
-    history_id = request.form.get('history_id')
     h_detail = query_db('select * from history where username = ? and id = ?', [username, history_id], one=True)
     if h_detail is None:
         return redirect(url_for('history'))
@@ -352,29 +351,32 @@ def history():
                 })
             items.append(item)
         return render_template('history.html', username=username, items=items, role=role, thead=thead)
-    if request.method == 'POST':
-        action_map = {
-            'delete': 'deleted',
-        }
-        username = session['username']
-        form_username = request.form.get('username')
-        action = action_map.get(request.form.get('action'))
-        delete_list = request.form.getlist('history_id')
-        if not delete_list:
-            return redirect(url_for('history'))
-        if username != form_username or action is None:
-            return '403 Forbidden', 403
-        if session.get('role') == 'admin':
-            modify_db(
-                'update history set status = ? where id in (%s)' % ','.join('?' * len(delete_list)),
-                [action] + delete_list
-            )
-        else:
-            modify_db(
-                'update history set status = ? where username = ? and id in (%s)' % ','.join('?' * len(delete_list)),
-                [action, username] + delete_list
-            )
+
+    if request.form.get('action') == 'edit':
+        history_id = request.form.get('history_id')
+        return redirect(url_for('antigen_edit', history_id=history_id))
+    action_map = {
+        'delete': 'deleted',
+    }
+    username = session['username']
+    form_username = request.form.get('username')
+    action = action_map.get(request.form.get('action'))
+    delete_list = request.form.getlist('history_id')
+    if not delete_list:
         return redirect(url_for('history'))
+    if username != form_username or action is None:
+        return '403 Forbidden', 403
+    if session.get('role') == 'admin':
+        modify_db(
+            'update history set status = ? where id in (%s)' % ','.join('?' * len(delete_list)),
+            [action] + delete_list
+        )
+    else:
+        modify_db(
+            'update history set status = ? where username = ? and id in (%s)' % ','.join('?' * len(delete_list)),
+            [action, username] + delete_list
+        )
+    return redirect(url_for('history'))
 
 
 @app.route('/account', methods=['GET', 'POST'])
