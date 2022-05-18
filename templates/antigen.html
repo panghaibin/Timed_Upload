@@ -48,69 +48,46 @@
         <label for="throat">口腔</label>
     </p>
     <p>
-        <label>快速选择：</label>
+        <label>日期快选：</label>
         <label>
-            <input id="today_first" type="radio" name="quick" value="1" onclick="select_plan(1)">
+            <input id="today" type="radio" name="quick" value="1" onclick="select_date(1)">
         </label>
-        <label for="today_first">今日(<span id="today_first_day"></span>) 第1次</label>
+        <label for="today">今日(<span id="today_day"></span>)</label>
         <label style="padding-left: 2em">
-            <input id="today_second" type="radio" name="quick" value="2" onclick="select_plan(2)">
+            <input id="tmr" type="radio" name="quick" value="2" onclick="select_date(2)">
         </label>
-        <label for="today_second">第2次</label>
+        <label for="tmr">明日(<span id="tmr_day"></span>)</label>
         <br>
-        <label id="quick_note" for="today_first"
+        <label id="quick_note" for="today"
                style="padding-left: 7rem;font-size: 0.8em;display: none">
-            提示：现在是<span id="quick_note_date"></span>的凌晨
+            现在是<span id="quick_note_date"></span>的凌晨
         </label>
     </p>
-    {#    <p>#}
-    {#        <span style="padding-left: 5.3em">#}
-    {#            <label>#}
-    {#                <input id="today_second" type="radio" name="quick" value="1" onclick="select_plan(2)">#}
-    {#            </label>#}
-    {#            <label for="today_second">今日(<span id="today_second_day"></span>) 第2次</label>#}
-    {#        </span>#}
-    {#    </p>#}
     <p>
         <span style="padding-left: 5.3em">
             <label>
-                <input id="tmr_first" type="radio" name="quick" value="3" onclick="select_plan(3)">
+                <input id="da_tmr" type="radio" name="quick" value="3" onclick="select_date(3)">
             </label>
-            <label for="tmr_first">明日(<span id="tmr_first_day"></span>) 第1次</label>
+            <label for="da_tmr">后天(<span id="da_tmr_day"></span>)</label>
             <label style="padding-left: 2em">
-                <input id="tmr_second" type="radio" name="quick" value="4" onclick="select_plan(4)">
+                <input id="tdfn" type="radio" name="quick" value="4" onclick="select_date(4)">
             </label>
-            <label for="tmr_second">第2次</label>
+            <label for="tdfn"><span id="tdfn_day"></span></label>
         </span>
     </p>
-    {#    <p>#}
-    {#        <span style="padding-left: 5.3em">#}
-    {#            <label>#}
-    {#                <input id="tmr_second" type="radio" name="quick" value="1" onclick="select_plan(4)">#}
-    {#            </label>#}
-    {#            <label for="tmr_second">明日(<span id="tmr_second_day"></span>) 第2次</label>#}
-    {#        </span>#}
-    {#    </p>#}
     <p>
-        <label>次数：</label>
+        <label>次数选择：</label>
         <label>
-            <input id="first" type="radio" name="test_times" value="1" required>
+            <input id="first" type="radio" name="test_times" value="1" onclick="select_hour(1)" required>
         </label>
         <label for="first">第1次</label>
-        <label>
-            <input id="second" type="radio" name="test_times" value="2" required>
+        <label style="padding-left: 3em">
+            <input id="second" type="radio" name="test_times" value="2" onclick="select_hour(2)" required>
         </label>
         <label for="second">第2次</label>
     </p>
-    {#    <p>#}
-    {#        <label>计划：</label>#}
-    {#        <label>#}
-    {#            <input type="date" name="date" value="{{ date }}">#}
-    {#            <input type="time" name="time" value="{{ time }}">#}
-    {#        </label>#}
-    {#    </p>#}
     <p>
-        <label>计划：</label>
+        <label>计划时间：</label>
         <label>
             2022
             /
@@ -156,7 +133,7 @@
         </label>
     </p>
     <p id="img_upload_form">
-        <label>图片：</label>
+        <label>上传图片：</label>
         <label>
             <input id="image" type="file" name="image" required>
         </label>
@@ -195,19 +172,29 @@
 </form>
 </body>
 <script>
+    let dl = [];
     let now = new Date();
-    const today_month = now.getMonth() + 1;
-    const today_day = now.getDate();
+    for (let i = 0; i <= 3; i++) {
+        let d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+        dl.push(d);
+    }
+
+    const today_month = dl[0].getMonth() + 1;
+    const today_day = dl[0].getDate();
     const today_date = today_month + '/' + today_day;
-    document.getElementById("today_first_day").innerText = today_date.toString();
-    {#document.getElementById("today_second_day").innerText = today_date.toString();#}
-    let tmr = now
-    tmr.setDate(tmr.getDate() + 1);
-    const tmr_month = tmr.getMonth() + 1;
-    const tmr_day = tmr.getDate();
+    document.getElementById("today_day").innerText = today_date.toString();
+    const tmr_month = dl[1].getMonth() + 1;
+    const tmr_day = dl[1].getDate();
     const tmr_date = tmr_month + '/' + tmr_day;
-    document.getElementById("tmr_first_day").innerText = tmr_date.toString();
-    {#document.getElementById("tmr_second_day").innerText = tmr_date.toString();#}
+    document.getElementById("tmr_day").innerText = tmr_date.toString();
+    const da_tmr_month = dl[2].getMonth() + 1;
+    const da_tmr_day = dl[2].getDate();
+    const da_tmr_date = da_tmr_month + '/' + da_tmr_day;
+    document.getElementById("da_tmr_day").innerText = da_tmr_date.toString();
+    const tdfn_month = dl[3].getMonth() + 1;
+    const tdfn_day = dl[3].getDate();
+    const tdfn_date = tdfn_month + '/' + tdfn_day;
+    document.getElementById("tdfn_day").innerText = tdfn_date.toString();
 
     const hour = now.getHours();
     if (hour < 6) {
@@ -224,23 +211,27 @@
     }
     */
 
-    function select_plan(plan_id) {
-        if (plan_id === 1 || plan_id === 3) {
-            document.getElementById("first").checked = true;
-            document.getElementById("second").checked = false;
-            document.getElementById("hour_7").selected = true;
-        } else if (plan_id === 2 || plan_id === 4) {
-            document.getElementById("first").checked = false;
-            document.getElementById("second").checked = true;
-            document.getElementById("hour_15").selected = true;
-        }
-
-        if (plan_id === 1 || plan_id === 2) {
+    function select_date(plan_id) {
+        if (plan_id === 1) {
             document.getElementById("month_" + today_month).selected = true;
             document.getElementById("day_" + today_day).selected = true;
-        } else if (plan_id === 3 || plan_id === 4) {
+        } else if (plan_id === 2) {
             document.getElementById("month_" + tmr_month).selected = true;
             document.getElementById("day_" + tmr_day).selected = true;
+        } else if (plan_id === 3) {
+            document.getElementById("month_" + da_tmr_month).selected = true;
+            document.getElementById("day_" + da_tmr_day).selected = true;
+        } else if (plan_id === 4) {
+            document.getElementById("month_" + tdfn_month).selected = true;
+            document.getElementById("day_" + tdfn_day).selected = true;
+        }
+    }
+
+    function select_hour(plan_id) {
+        if (plan_id === 1) {
+            document.getElementById("hour_7").selected = true;
+        } else if (plan_id === 2) {
+            document.getElementById("hour_15").selected = true;
         }
     }
 
