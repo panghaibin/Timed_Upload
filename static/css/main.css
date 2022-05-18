@@ -1,5 +1,7 @@
 html, body {
     min-width: 390px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 a {
