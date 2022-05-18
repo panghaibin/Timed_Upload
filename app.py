@@ -153,7 +153,11 @@ def antigen_edit(history_id):
         return redirect(url_for('history'))
 
     username = session['username']
-    h_detail = query_db('select * from history where username = ? and id = ?', [username, history_id], one=True)
+    h_detail = query_db(
+        'select * from history where username = ? and id = ? and status = ?',
+        [username, history_id, 'pending'],
+        one=True
+    )
     if h_detail is None:
         return redirect(url_for('history'))
 
