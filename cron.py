@@ -88,7 +88,7 @@ def job():
             ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name)
             status, result = ag.upload()
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
             status, result = 'error', f'运行时错误\n\n{e}'
         set_history(task['id'], status, time.time())
         title = f'{username[-4:]}第{times}次{status_map[status]}'
@@ -99,5 +99,5 @@ def job():
         api_key = user_config['api_key']
         send_result = send_msg(title, result, api_type, api_key)
         logging.info('消息发送成功') if send_result else logging.info('消息发送失败')
-        if i < len(pending) - 1:
+        if i < len(running) - 1:
             time.sleep(5 * 60)
