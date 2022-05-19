@@ -32,7 +32,6 @@ def set_history(id_, status, update_time=None):
         if not update_time:
             query = "UPDATE history SET status = ? WHERE id = ?"
             db.cursor().execute(query, (status, id_))
-
         else:
             query = "UPDATE history SET status = ?, update_time = ? WHERE id = ?"
             db.cursor().execute(query, (status, update_time, id_))
