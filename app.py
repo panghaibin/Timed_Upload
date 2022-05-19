@@ -317,13 +317,14 @@ def history():
             )
             username_name = {}
         items = []
-        for user_history in user_histories:
+        for i, user_history in enumerate(user_histories):
             status = user_history.get('status')
             h_username = user_history.get('username')
             img_path = user_history.get('test_img_path')
             cps_path = user_history.get('test_cps_path')
             img_str = Markup(get_img_str(h_username, img_path, 'a'))
-            cps_str = Markup(get_img_str(h_username, cps_path, 'img'))
+            cps_type = 'img' if i == 0 else 'a'
+            cps_str = Markup(get_img_str(h_username, cps_path, cps_type))
             update_time = user_history.get('update_time')
             if update_time is None:
                 update_time = '-'
