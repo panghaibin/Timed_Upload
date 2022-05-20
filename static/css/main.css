@@ -1,7 +1,8 @@
 html, body {
     min-width: 390px;
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
+    padding: 6px;
 }
 
 a {
