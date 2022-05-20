@@ -248,7 +248,7 @@ def antigen_form():
                 test_cps_path = test_img_path
             else:
                 if watermark_img:
-                    random_min = random.randint(1, 5)
+                    random_min = random.randint(0, 4)
                     t = test_date_time - timedelta(minutes=random_min)
                     watermark_img = f'{t.month}/{t.day} {t.hour}:%02d' % t.minute
                 try:
