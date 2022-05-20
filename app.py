@@ -250,7 +250,7 @@ def antigen_form():
                 if watermark_img:
                     random_min = random.randint(1, 5)
                     t = test_date_time - timedelta(minutes=random_min)
-                    watermark_img = f'{t.month}/{t.day} {t.hour}:{t.minute}'
+                    watermark_img = f'{t.month}/{t.day} {t.hour}:%02d' % t.minute
                 try:
                     test_cps_path = img_proc(test_img_path, transform=transform_img, watermark=watermark_img)
                 except Exception as e:
