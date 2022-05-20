@@ -94,41 +94,31 @@
             /
             <select name="month" style="width: 3.5em">
                 {% for m in month_list %}
-                    <option id="month_{{ m }}" value="{{ m }}"
-                            {% if m == month %}
-                            selected
-                            {% endif %}
-                    >{{ "%02d"|format(m) }}</option>
+                    <option id="month_{{ m }}" value="{{ m }}" {% if m == month %}selected{% endif %}>
+                        {{ "%02d"|format(m) }}
+                    </option>
                 {% endfor %}
             </select>
             /
             <select name="day" style="width: 3.5em">
                 {% for d in day_list %}
-                    <option id="day_{{ d }}" value="{{ d }}"
-                            {% if d == day %}
-                            selected
-                            {% endif %}
-                    >{{ "%02d"|format(d) }}</option>
+                    <option id="day_{{ d }}" value="{{ d }}" {% if d == day %}selected{% endif %}>
+                        {{ "%02d"|format(d) }}
+                    </option>
                 {% endfor %}
             </select>
             -
             <select name="hour" style="width: 3.5em">
                 {% for h in hour_list %}
-                    <option id="hour_{{ h }}" value="{{ h }}"
-                            {% if h == hour %}
-                            selected
-                            {% endif %}
-                    >{{ "%02d"|format(h) }}</option>
+                    <option id="hour_{{ h }}" value="{{ h }}" {% if h == hour %}selected{% endif %}>
+                        {{ "%02d"|format(h) }}
+                    </option>
                 {% endfor %}
             </select>
             :
             <select name="minute" style="width: 3.5em">
                 {% for m in minute_list %}
-                    <option value="{{ m }}"
-                            {% if m == minute %}
-                            selected
-                            {% endif %}
-                    >{{ "%02d"|format(m) }}</option>
+                    <option value="{{ m }}" {% if m == minute %}selected{% endif %}>{{ "%02d"|format(m) }}</option>
                 {% endfor %}
             </select>
         </label>

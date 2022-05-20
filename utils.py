@@ -11,6 +11,7 @@ import logging
 import requests
 import datetime
 import traceback
+from flask import url_for
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from PIL import Image, ImageOps, ImageEnhance, ImageFont, ImageDraw
@@ -48,8 +49,8 @@ def get_time():
 def get_img_str(username, img_path, type_=None):
     img_str = '-'
     img_name = img_path.replace('\\', '/').split('/')[-1]
-    img_show_url = '/img_show/%s/%s' % (username, img_name)
-    img_url = '/img/%s/%s' % (username, img_name)
+    img_show_url = url_for('img_show', username=username, img_name=img_name)
+    img_url = url_for('img', username=username, img_name=img_name)
     if not img_path or not type_:
         return img_str
     if type_ == 'a':
