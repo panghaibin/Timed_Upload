@@ -2,6 +2,7 @@ import os
 import time
 import sqlite3
 import logging
+from datetime import datetime
 from utils import AgUpload, get_config, abs_path, send_msg, status_map, config_path
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -83,8 +84,11 @@ def job():
         password = user_info['password']
         name = user_info['name']
 
+        schedule_time = task['schedule_time']
+        schedule_time = datetime.fromtimestamp(schedule_time)
+
         try:
-            ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name)
+            ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name, schedule_time)
             status, result = ag.upload()
         except Exception as e:
             logging.exception(e)

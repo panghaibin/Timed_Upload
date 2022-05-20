@@ -269,7 +269,8 @@ def img_proc(img_path, transform=False, watermark=None):
 
 
 class AgUpload:
-    def __init__(self, username, password, name, test_type, test_method, test_times, test_result, img_path, img_name):
+    def __init__(self, username, password, name, test_type, test_method, test_times, test_result, img_path, img_name,
+                 schedule_time: datetime.datetime):
         self.username = username
         self.password = password
         self.name = name
@@ -283,8 +284,9 @@ class AgUpload:
 
         self.view_state = None
         self.view_state_generator = None
-        self.t = get_time()
-        self.t -= datetime.timedelta(minutes=2)
+        self.now_time = get_time()
+        self.now_time -= datetime.timedelta(minutes=2)
+        self.schedule_time = schedule_time
         self.test_times = test_times
         self.test_type = test_type
         self.test_method = test_method
@@ -322,7 +324,7 @@ class AgUpload:
         report_even_target = 'p1$P_Upload$btnUploadImage'
         self.view_state = re.search(r'id="__VIEWSTATE" value="(.*?)" /', ag_html).group(1)
         self.view_state_generator = re.search(r'id="__VIEWSTATEGENERATOR" value="(.*?)" /', ag_html).group(1)
-        t = self.t
+        t = self.schedule_time
         test_date = t.strftime('%Y-%m-%d %H:%M')
         self.test_check = f'当天第{self.test_times}次({t.year}/{t.month}/{t.day}'
 
@@ -367,8 +369,20 @@ class AgUpload:
             'p1$P_Upload$FileHeSJCBG': (self.img_name, self.img, 'image/jpeg', {'Content-Type': 'image/jpeg'}),
         }
 
+    def _check_uploaded(self, ag_html):
+        ag_line = html2JsLine(ag_html)
+        record_list = []
+        for i, h in enumerate(ag_line):
+            if 'RecordCount' in h:
+                record_list = jsLine2Json(ag_line[i])['F_Rows']
+                break
+        for r in record_list:
+            if self.test_check in str(r) and self.test_type in str(r):
+                return True
+        return False
+
     def upload(self):
-        now = self.t.strftime('%Y-%m-%d %H:%M:%S')
+        now = self.now_time.strftime('%Y-%m-%d %H:%M:%S')
         if not self.session:
             title = f'{self.id_num}登录失败'
             logging.error(title)
@@ -379,7 +393,7 @@ class AgUpload:
         title = f'{self.id_num}的第{self.test_times}次结果'
         ag_upload = 'https://selfreport.shu.edu.cn/HSJC/HeSJCSelfUploads.aspx'
         ag_html = self.session.get(ag_upload).text
-        if self.test_check in ag_html:
+        if self._check_uploaded(ag_html):
             title += '已上传过'
             logging.info(title)
             self.img.close()
