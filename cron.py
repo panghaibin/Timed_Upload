@@ -77,7 +77,7 @@ def job():
         method = task['test_method']
         times = task['test_times']
         result = task['test_result']
-        img_path = task['test_cps_path']
+        img_path = os.path.join(abs_path, task['test_cps_path'])
         rimg_name = task['test_rimg_name']
 
         user_info = get_user_info(username)

@@ -268,6 +268,8 @@ def antigen_form():
             os.remove(test_img_path)
             test_img_path = ''
 
+        test_img_path = test_img_path.replace(os.path.join(abs_path, ''), '')
+        test_cps_path = test_cps_path.replace(os.path.join(abs_path, ''), '')
         modify_db(
             'insert into history '
             '(username, schedule_time, test_type, test_method, test_times, test_result, '
