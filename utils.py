@@ -383,21 +383,22 @@ class AgUpload:
 
     def upload(self):
         now = self.now_time.strftime('%Y-%m-%d %H:%M:%S')
+        cron = self.schedule_time.strftime('%Y-%m-%d %H:%M')
+        title = f'执行时间：{now}\n\n计划时间：{cron}\n\n{self.id_num}的第{self.test_times}次结果'
         if not self.session:
-            title = f'{self.id_num}登录失败'
+            title += '登录失败'
             logging.error(title)
-            return 'fail', f'{now}\n\n{title}'
+            return 'fail', title
 
         self._get_report_form()
         self._get_img_file()
-        title = f'{self.id_num}的第{self.test_times}次结果'
         ag_upload = 'https://selfreport.shu.edu.cn/HSJC/HeSJCSelfUploads.aspx'
         ag_html = self.session.get(ag_upload).text
         if self._check_uploaded(ag_html):
             title += '已上传过'
             logging.info(title)
             self.img.close()
-            return 'uploaded', f'{now}\n\n{title}'
+            return 'uploaded', title
 
         upload_times = 0
         result_list = []
@@ -421,10 +422,10 @@ class AgUpload:
 
         if '上传成功' in result or self.test_check in result:
             title += '上传成功'
-            return_ = 'success', f'{now}\n\n{title}'
+            return_ = 'success', title
         elif '更新失败' in result:
             title += '已上传过'
-            return_ = 'uploaded', f'{now}\n\n{title}'
+            return_ = 'uploaded', title
         else:
             title += '上传失败'
             logging.info(result)
@@ -433,7 +434,7 @@ class AgUpload:
                 result = result[-1].split('&#39;')[1]
                 result_list.append(result)
             result_str = '\n\n'.join(result_list)
-            return_ = 'fail', f'{now}\n\n{title}\n\n{result_str}'
+            return_ = 'fail', f'{title}\n\n{result_str}'
         logging.info(title)
         return return_
 

@@ -3,7 +3,7 @@ import time
 import sqlite3
 import logging
 from datetime import datetime
-from utils import AgUpload, get_config, abs_path, send_msg, status_map, config_path
+from utils import AgUpload, get_config, abs_path, send_msg, status_map, config_path, get_time
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 app_config = get_config(os.path.join(abs_path, config_path))
@@ -92,9 +92,12 @@ def job():
             status, result = ag.upload()
         except Exception as e:
             logging.exception(e)
-            status, result = 'error', f'运行时错误\n\n{e}'
+            now = get_time().strftime('%Y-%m-%d %H:%M:%S')
+            cron = schedule_time.strftime('%Y-%m-%d %H:%M')
+            status, result = 'error', f'{now}\n\n{username}运行时错误\n\n计划时间：{cron}\n\n{e}'
         set_history(task['id'], status, time.time())
-        title = f'{username[-4:]}第{times}次{status_map[status]}'
+        day = schedule_time.strftime('%m-%d')
+        title = f'{username[-4:]} {day}第{times}次{status_map[status]}'
         user_config = get_user_config(username, ['api_type', 'api_key'])
         if not user_config:
             user_config = get_user_config('admin', ['api_type', 'api_key'])
