@@ -260,7 +260,8 @@ def antigen_form():
                         msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>')
                     ), 500
         else:
-            test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.jpg')
+            rimg_name = f'{str(int(time.time() * 1000))}.jpg'
+            test_img_path = os.path.join(test_img_path, rimg_name)
             random_img_path = get_random_img(RANDOM_IMG_FOLDER)
             shutil.copy(random_img_path, test_img_path)
             test_cps_path = img_proc(test_img_path, transform=True)
