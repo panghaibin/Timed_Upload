@@ -440,7 +440,7 @@ class AgUpload:
 
 def send_msg(title, desp, api, key):
     text = ''
-    title += '，下次不要忘记填报哦~'
+    # title += '，下次不要忘记填报哦~'
     try:
         if api == 1:
             url = "http://sctapi.ftqq.com/%s.send" % key
