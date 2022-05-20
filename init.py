@@ -8,7 +8,7 @@ with sqlite3.connect('database.db') as db:
         db.cursor().executescript(f.read())
     # 测试
     db.cursor().execute('INSERT INTO users (username, password, name, role_id) VALUES (?, ?, ?, ?)',
-                        ('admin', 'admin', '管理员', 1))
+                        ('admin2', 'admin', '管理员', 1))
     db.commit()
 
 key = os.urandom(24)
