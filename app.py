@@ -36,6 +36,8 @@ scheduler.start()
 app_config = get_config(os.path.join(abs_path, config_path))
 DATABASE = os.path.join(abs_path, app_config['DATABASE'])
 UPLOAD_FOLDER = os.path.join(abs_path, app_config['UPLOAD_FOLDER'])
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 RANDOM_IMG_FOLDER = os.path.join(abs_path, app_config['RANDOM_IMG_FOLDER'])
 app.secret_key = app_config['SECRET_KEY']
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
