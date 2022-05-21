@@ -68,6 +68,12 @@
         </label>
         <input type="submit" value="筛选">
         <button type="button" onclick="location.reload();" style="margin-left: 2em">刷新</button>
+        {% if role == 'admin' %}
+            <label for="filter_username">
+                <input id="f-username" type="text" style="margin-left: 2em" placeholder="筛选学号"
+                       oninput="filter_username(this.value)">
+            </label>
+        {% endif %}
     </p>
 </form>
 <form id="h-form" action="" method="post">
@@ -88,7 +94,7 @@
     {% for item in items %}
         <tr>
             {% if role == 'admin' %}
-                <td>{{ item.username }}</td>
+                <td class="username">{{ item.username }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.upload_time }}</td>
             {% endif %}
@@ -138,5 +144,17 @@
         document.getElementById('action').value = 'edit';
         document.getElementById('h-form').submit();
     }
+    {% if role == 'admin' %}
+        function filter_username(username) {
+            let u = document.getElementsByClassName('username');
+            for (let i = 0; i < u.length; i++) {
+                if (u[i].innerText.indexOf(username) === -1) {
+                    u[i].parentNode.style.display = 'none';
+                } else {
+                    u[i].parentNode.style.display = '';
+                }
+            }
+        }
+    {% endif %}
 </script>
 </html>
