@@ -96,6 +96,8 @@ def index():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('role', None)
+    session.pop('users', None)
     return redirect(url_for('login'))
 
 
