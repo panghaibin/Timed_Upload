@@ -50,10 +50,21 @@
 <body>
 <a href="{{ url_for('antigen') }}">计划任务上传</a> | 计划任务记录 | <a href="{{ url_for('account') }}">账户管理</a>
 <p>{{ username }}的计划任务记录</p>
-<p>
-    <button onclick="location.reload();">刷新</button>
-</p>
-<form id="h-form" action="{{ url_for('history') }}" method="post">
+<form action="{{ url_for('history') }}" method="get">
+    <p>
+        <label>
+            <select id="filter" name="filter" style="height: 1.5rem">
+            <option value="all" selected>全部状态</option>
+                {% for k,v in filter_types.items() %}
+                    <option value="{{ k }}" {{ filter == k and 'selected' or '' }}>{{ v }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <input type="submit" value="过滤">
+        <button onclick="location.reload();" style="margin-left: 2em">刷新</button>
+    </p>
+</form>
+<form id="h-form" action="" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
     <input id="history" type="hidden" name="history_id" value="">
@@ -63,7 +74,8 @@
 <table>
     <thead>
     <tr>
-        {% for th in thead %}<th>{{ th }}</th>{% endfor %}
+        {% for th in thead %}
+            <th>{{ th }}</th>{% endfor %}
     </tr>
     </thead>
     <tbody>

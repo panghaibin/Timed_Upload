@@ -306,18 +306,27 @@ def history():
             'deleted': '#6c757d',
             'error': '#dc3545',
         }
+        filter_status = request.args.get('filter')
+        filter_status = filter_status if filter_status in status_map.keys() else None
         role = session.get('role')
         if role == 'admin':
             thead.insert(0, '学号')
             thead.insert(1, '姓名')
-            query = 'select h.*, u.name from history h inner join users u on h.username = u.username' \
-                    ' order by username asc, schedule_time desc'
-            user_histories = query_db(query)
+            if not filter_status:
+                query = 'select h.*, u.name from history h inner join users u on h.username = u.username' \
+                        ' order by username asc, schedule_time desc'
+                user_histories = query_db(query)
+            else:
+                query = 'select h.*, u.name from history h inner join users u on h.username = u.username' \
+                        ' where status = ? order by username asc, schedule_time desc'
+                user_histories = query_db(query, [filter_status])
         else:
-            user_histories = query_db(
-                'select * from history where status != ? and username = ? order by schedule_time desc',
-                ['deleted', username]
-            )
+            if not filter_status:
+                query = 'select * from history where status != ? and username = ? order by schedule_time desc'
+                user_histories = query_db(query, ['deleted', username])
+            else:
+                query = 'select * from history where status = ? and username = ? order by schedule_time desc'
+                user_histories = query_db(query, [filter_status, username])
         items = []
         for i, user_history in enumerate(user_histories):
             status = user_history.get('status')
@@ -351,7 +360,23 @@ def history():
                     'name': user_history.get('name'),
                 })
             items.append(item)
-        return render_template('history.html', username=username, items=items, role=role, thead=thead)
+
+        filter_types = status_map.copy()
+        if role != 'admin':
+            user_status = query_db(
+                'select distinct status from history where username = ?', [username]
+            )
+            user_status = [s.get('status') for s in user_status]
+            filter_types = {k: v for k, v in filter_types.items() if k in user_status and k != 'deleted'}
+        return render_template(
+            'history.html',
+            username=username,
+            items=items,
+            role=role,
+            thead=thead,
+            filter=filter_status,
+            filter_types=filter_types,
+        )
 
     if request.form.get('action') == 'edit':
         history_id = request.form.get('history_id')
@@ -377,7 +402,7 @@ def history():
             'update history set status = ? where username = ? and id in (%s)' % ','.join('?' * len(delete_list)),
             [action, username] + delete_list
         )
-    return redirect(url_for('history'))
+    return redirect(url_for('history', **{'filter': request.args.get('filter')}))
 
 
 @app.route('/account', methods=['GET', 'POST'])
