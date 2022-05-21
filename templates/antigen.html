@@ -100,13 +100,9 @@
                 {% endfor %}
             </select>
             /
-            <select name="day" style="width: 3.5em">
-                {% for d in day_list %}
-                    <option id="day_{{ d }}" value="{{ d }}" {% if d == day %}selected{% endif %}>
-                        {{ "%02d"|format(d) }}
-                    </option>
-                {% endfor %}
-            </select>
+            <input id="day" type="number" name="day" value="{{ day }}"
+                   oninput="this.value=this.value.replace(/\D/g,''); if (this.value > 31 || this.value.length > 2) {this.value = this.value.slice(0,this.value.length-1)} if (this.value < 0) {this.value = 1}"
+                   style="width: 3em;height: 1em;padding: 0 0 0 4px" required>
             -
             <select name="hour" style="width: 3.5em">
                 {% for h in hour_list %}
@@ -194,7 +190,6 @@
     }
 
     /*
-    const hour = now.getHours();
     if (hour < 12 || hour > 22) {
         document.getElementById("first").checked = true;
     } else {
@@ -205,16 +200,16 @@
     function select_date(plan_id) {
         if (plan_id === 1) {
             document.getElementById("month_" + today_month).selected = true;
-            document.getElementById("day_" + today_day).selected = true;
+            document.getElementById("day").value = today_day;
         } else if (plan_id === 2) {
             document.getElementById("month_" + tmr_month).selected = true;
-            document.getElementById("day_" + tmr_day).selected = true;
+            document.getElementById("day").value = tmr_day;
         } else if (plan_id === 3) {
             document.getElementById("month_" + da_tmr_month).selected = true;
-            document.getElementById("day_" + da_tmr_day).selected = true;
+            document.getElementById("day").value = da_tmr_day;
         } else if (plan_id === 4) {
             document.getElementById("month_" + tdfn_month).selected = true;
-            document.getElementById("day_" + tdfn_day).selected = true;
+            document.getElementById("day").value = tdfn_day;
         }
     }
 

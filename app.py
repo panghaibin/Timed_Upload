@@ -174,7 +174,7 @@ def antigen_edit(history_id):
         history_id=history_id,
         month_list=[i for i in range(1, 13)],
         month=t.month,
-        day_list=[i for i in range(1, 32)],
+        # day_list=[i for i in range(1, 32)],
         day=t.day,
         hour_list=[i for i in range(0, 24)],
         hour=t.hour,
