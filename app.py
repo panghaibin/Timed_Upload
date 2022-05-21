@@ -310,19 +310,14 @@ def history():
         if role == 'admin':
             thead.insert(0, '学号')
             thead.insert(1, '姓名')
-            user_histories = query_db(
-                'select * from history order by username asc, schedule_time desc'
-            )
-            username_name = {
-                i['username']: i['name']
-                for i in query_db('select username, name from users')
-            }
+            query = 'select h.*, u.name from history h inner join users u on h.username = u.username' \
+                    ' order by username asc, schedule_time desc'
+            user_histories = query_db(query)
         else:
             user_histories = query_db(
                 'select * from history where status != ? and username = ? order by schedule_time desc',
                 ['deleted', username]
             )
-            username_name = {}
         items = []
         for i, user_history in enumerate(user_histories):
             status = user_history.get('status')
@@ -353,7 +348,7 @@ def history():
             if role == 'admin':
                 item.update({
                     'username': h_username,
-                    'name': username_name.get(h_username),
+                    'name': user_history.get('name'),
                 })
             items.append(item)
         return render_template('history.html', username=username, items=items, role=role, thead=thead)
