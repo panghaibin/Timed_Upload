@@ -53,7 +53,7 @@
 <p>
     <button onclick="location.reload();">刷新</button>
 </p>
-<form id="h-form" action="" method="post">
+<form id="h-form" action="{{ url_for('history') }}" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
     <input id="history" type="hidden" name="history_id" value="">
@@ -105,7 +105,6 @@
         if (confirm_msg) {
             document.getElementById('history').value = hid;
             document.getElementById('action').value = 'delete';
-            document.getElementById('h-form').action = '{{ url_for('history') }}';
             document.getElementById('h-form').submit();
         }
     }
@@ -118,7 +117,6 @@
         }
         document.getElementById('history').value = hid;
         document.getElementById('action').value = 'edit';
-        document.getElementById('h-form').action = '{{ url_for('history') }}';
         document.getElementById('h-form').submit();
     }
 </script>
