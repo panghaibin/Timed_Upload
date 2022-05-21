@@ -304,7 +304,7 @@ def history():
             'deleted': '#6c757d',
             'error': '#dc3545',
         }
-        filter_status = request.args.get('filter')
+        filter_status = request.args.get('status')
         filter_status = filter_status if filter_status in status_map.keys() else None
         role = session.get('role')
         if role == 'admin':
@@ -359,21 +359,21 @@ def history():
                 })
             items.append(item)
 
-        filter_types = status_map.copy()
+        status_types = status_map.copy()
         if role != 'admin':
             user_status = query_db(
                 'select distinct status from history where username = ?', [username]
             )
             user_status = [s.get('status') for s in user_status]
-            filter_types = {k: v for k, v in filter_types.items() if k in user_status and k != 'deleted'}
+            status_types = {k: v for k, v in status_types.items() if k in user_status and k != 'deleted'}
         return render_template(
             'history.html',
             username=username,
             items=items,
             role=role,
             thead=thead,
-            filter=filter_status,
-            filter_types=filter_types,
+            status=filter_status,
+            status_types=status_types,
         )
 
     if request.form.get('action') == 'edit':
@@ -400,7 +400,7 @@ def history():
             'update history set status = ? where username = ? and id in (%s)' % ','.join('?' * len(delete_list)),
             [action, username] + delete_list
         )
-    return redirect(url_for('history', **{'filter': request.args.get('filter')}))
+    return redirect(url_for('history', **{'status': request.args.get('status')}))
 
 
 @app.route('/account', methods=['GET', 'POST'])

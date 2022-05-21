@@ -53,15 +53,15 @@
 <form action="{{ url_for('history') }}" method="get">
     <p>
         <label>
-            <select id="filter" name="filter" style="height: 1.5rem">
+            <select id="status" name="status" style="height: 1.5rem">
             <option value="all" selected>全部状态</option>
-                {% for k,v in filter_types.items() %}
-                    <option value="{{ k }}" {{ filter == k and 'selected' or '' }}>{{ v }}</option>
+                {% for k, v in status_types.items() %}
+                    <option value="{{ k }}" {{ status == k and 'selected' or '' }}>{{ v }}</option>
                 {% endfor %}
             </select>
         </label>
-        <input type="submit" value="过滤">
-        <button onclick="location.reload();" style="margin-left: 2em">刷新</button>
+        <input type="submit" value="筛选">
+        <button type="button" onclick="location.reload();" style="margin-left: 2em">刷新</button>
     </p>
 </form>
 <form id="h-form" action="" method="post">
