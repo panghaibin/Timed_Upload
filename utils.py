@@ -64,6 +64,12 @@ def get_img_str(username, img_path, type_=None):
     return img_str
 
 
+def datetime_from_str(img_path):
+    timestamp = int(re.findall(r'\d{13}', img_path)[0]) / 1000
+    date = datetime.datetime.fromtimestamp(timestamp).strftime('%m-%d %H:%M:%S')
+    return date
+
+
 def encryptPass(password):
     key_str = '''-----BEGIN PUBLIC KEY-----
     MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDl/aCgRl9f/4ON9MewoVnV58OL

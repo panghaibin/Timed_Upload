@@ -6,6 +6,12 @@
     <title>计划任务记录</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <style>
+        {% if role == 'admin' %}
+            html, body {
+                max-width: 1050px;
+            }
+        {% endif %}
+
         @media only screen and (max-width: 830px),
         (min-device-width: 830px) and (max-device-width: 830px) {
 
@@ -54,7 +60,7 @@
     <p>
         <label>
             <select id="status" name="status" style="height: 1.5rem">
-            <option value="all" selected>全部状态</option>
+                <option value="all" selected>全部状态</option>
                 {% for k, v in status_types.items() %}
                     <option value="{{ k }}" {{ status == k and 'selected' or '' }}>{{ v }}</option>
                 {% endfor %}
@@ -84,6 +90,7 @@
             {% if role == 'admin' %}
                 <td>{{ item.username }}</td>
                 <td>{{ item.name }}</td>
+                <td>{{ item.upload_time }}</td>
             {% endif %}
             <td><span id="status_{{ item.id }}" style="color: {{ item.status_color }}">{{ item.status }}</span></td>
             <td>{{ item.sch_time }}</td>

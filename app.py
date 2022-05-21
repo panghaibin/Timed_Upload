@@ -9,7 +9,7 @@ from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
 from utils import abs_path, get_time, get_config, status_map, img_proc, get_img_str, get_random_img, config_path, \
-    role_map
+    role_map, datetime_from_str
 from flask import send_from_directory, render_template, make_response, redirect, url_for, Flask, Markup, request, g, \
     session
 
@@ -262,8 +262,8 @@ def antigen_form():
                         msg=Markup(f'图片处理失败，<a href="/antigen">返回重新上传</a>')
                     ), 500
         else:
-            rimg_name = f'{str(int(time.time() * 1000))}.jpg'
-            test_img_path = os.path.join(test_img_path, rimg_name)
+            rimg_name = f'IMG_{test_date_time.strftime("%Y%m%d_%H%M%S")}.jpg'
+            test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.jpg')
             random_img_path = get_random_img(RANDOM_IMG_FOLDER)
             shutil.copy(random_img_path, test_img_path)
             test_cps_path = img_proc(test_img_path, transform=True)
@@ -310,6 +310,7 @@ def history():
         if role == 'admin':
             thead.insert(0, '学号')
             thead.insert(1, '姓名')
+            thead.insert(2, '上传时间')
             if not filter_status:
                 query = 'select h.*, u.name from history h inner join users u on h.username = u.username' \
                         ' order by username asc, schedule_time desc'
@@ -353,9 +354,11 @@ def history():
                 'cps': cps_str,
             }
             if role == 'admin':
+                upload_time = datetime_from_str(img_path + cps_path)
                 item.update({
                     'username': h_username,
                     'name': user_history.get('name'),
+                    'upload_time': upload_time,
                 })
             items.append(item)
 
