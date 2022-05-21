@@ -81,15 +81,9 @@
                 {% endfor %}
             </select>
             /
-            <select name="day" style="width: 3.5em">
-                {% for d in day_list %}
-                    <option id="day_{{ d }}" value="{{ d }}"
-                            {% if d == day %}
-                            selected
-                            {% endif %}
-                    >{{ "%02d"|format(d) }}</option>
-                {% endfor %}
-            </select>
+            <input id="day" type="number" name="day" value="{{ day }}"
+                   oninput="this.value=this.value.replace(/\D/g,''); if (this.value > 31 || this.value.length > 2) {this.value = this.value.slice(0,this.value.length-1)} if (this.value < 0) {this.value = 1}"
+                   style="width: 3em;height: 1em;padding: 0 0 0 4px" required>
             -
             <select name="hour" style="width: 3.5em">
                 {% for h in hour_list %}
