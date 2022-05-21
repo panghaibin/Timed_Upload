@@ -111,14 +111,16 @@ def login():
         user_in_db = query_db('select password, role_id from users where username = ?', [username], one=True)
         if user_in_db is not None and password == user_in_db.get('password'):
             session['username'] = username
+            role = role_map.get(user_in_db.get('role_id'))
+            session['role'] = role
+            if role == 'admin':
+                all_users = query_db('select username from users')
+                session['users'] = [user.get('username') for user in all_users]
+                return redirect(url_for('history'))
             users = session.get('users', [])
             users.append(username)
             users = list(set(users))
             session['users'] = users
-            role = role_map.get(user_in_db.get('role_id'))
-            session['role'] = role
-            if role == 'admin':
-                return redirect(url_for('history'))
             return redirect(url_for('antigen'))
         return render_template('login.html', msg='密码错误或用户不存在，请联系管理员', username=username)
     return render_template('login.html')
