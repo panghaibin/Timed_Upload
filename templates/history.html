@@ -58,16 +58,17 @@
 <p>{{ username }}的计划任务记录</p>
 <form action="{{ url_for('history') }}" method="get">
     <p>
-        <label>
-            <select id="status" name="status" style="height: 1.5rem">
+        <button type="button" onclick="location.reload();">刷新列表</button>
+        <label style="margin-left: 2em">
+            <select id="status" name="status" style="height: 1.5rem" onchange="filter_status(this.value)">
                 <option value="all" selected>全部状态</option>
                 {% for k, v in status_types.items() %}
                     <option value="{{ k }}" {{ status == k and 'selected' or '' }}>{{ v }}</option>
                 {% endfor %}
             </select>
         </label>
-        <input type="submit" value="筛选">
-        <button type="button" onclick="location.reload();" style="margin-left: 2em">刷新</button>
+        {# 现已用js实现 #}
+{#        <input type="submit" value="筛选">#}
         {% if role == 'admin' %}
             <label for="filter_username">
                 <input id="f-username" type="text" style="margin-left: 2em" placeholder="筛选学号"
@@ -98,7 +99,9 @@
                 <td>{{ item.name }}</td>
                 <td>{{ item.upload_time }}</td>
             {% endif %}
-            <td><span id="status_{{ item.id }}" style="color: {{ item.status_color }}">{{ item.status }}</span></td>
+            <td class="status"><span id="status_{{ item.id }}" style="color: {{ item.status_color }}">
+                {{ item.status }}
+            </span></td>
             <td>{{ item.sch_time }}</td>
             <td>{{ item.real_time }}</td>
             <td>{{ item.cps }}</td>
@@ -143,6 +146,21 @@
         document.getElementById('history').value = hid;
         document.getElementById('action').value = 'edit';
         document.getElementById('h-form').submit();
+    }
+
+    function filter_status(status) {
+        const status_types = {{ status_types|safe }};
+        const status_text = status_types[status];
+        let s = document.getElementsByClassName('status');
+        for (let i = 0; i < s.length; i++) {
+            if (status === 'all') {
+                s[i].parentNode.style.display = '';
+            } else if (s[i].innerText.indexOf(status_text) === -1) {
+                s[i].parentNode.style.display = 'none';
+            } else {
+                s[i].parentNode.style.display = '';
+            }
+        }
     }
     {% if role == 'admin' %}
         function filter_username(username) {
