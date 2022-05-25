@@ -103,7 +103,7 @@
                    oninput="this.value=this.value.replace(/\D/g,''); if (this.value > 31 || this.value.length > 2) {this.value = this.value.slice(0,this.value.length-1)} if (this.value < 0) {this.value = 1}"
                    style="width: 3em;height: 1em;padding: 0 0 0 4px" required>
             -
-            <select name="hour" style="width: 3.5em">
+            <select id="hour" name="hour" style="width: 3.5em">
                 {% for h in hour_list %}
                     <option id="hour_{{ h }}" value="{{ h }}" {% if h == hour %}selected{% endif %}>
                         {{ "%02d"|format(h) }}
@@ -213,9 +213,10 @@
     }
 
     function select_hour(plan_id) {
-        if (plan_id === 1 && (hour < 7 || hour > 12)) {
+        let select_hour = document.getElementById("hour").value;
+        if (plan_id === 1 && (select_hour < 7 || select_hour > 12)) {
             document.getElementById("hour_7").selected = true;
-        } else if (plan_id === 2 && hour < 15) {
+        } else if (plan_id === 2 && select_hour < 15) {
             document.getElementById("hour_15").selected = true;
         }
     }
