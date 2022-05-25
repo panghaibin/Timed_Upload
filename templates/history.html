@@ -12,6 +12,13 @@
             }
         {% endif %}
 
+        .show {
+        }
+
+        .hide {
+            display: none;
+        }
+
         @media only screen and (max-width: 830px),
         (min-device-width: 830px) and (max-device-width: 830px) {
 
@@ -56,27 +63,27 @@
 <body>
 <a href="{{ url_for('antigen') }}">计划任务上传</a> | 计划任务记录 | <a href="{{ url_for('account') }}">账户管理</a>
 <p>{{ username }}的计划任务记录</p>
-<form action="{{ url_for('history') }}" method="get">
-    <p>
-        <button type="button" onclick="location.reload();">刷新列表</button>
-        <label style="margin-left: 2em">
-            <select id="status" name="status" style="height: 1.5rem" onchange="filter_status(this.value)">
-                <option value="all" selected>全部状态</option>
-                {% for k, v in status_types.items() %}
-                    <option value="{{ k }}" {{ status == k and 'selected' or '' }}>{{ v }}</option>
-                {% endfor %}
-            </select>
+{#<form action="{{ url_for('history') }}" method="get">#}
+<p>
+    <button type="button" onclick="location.reload();">刷新列表</button>
+    <label style="margin-left: 2em">
+        <select id="status" name="status" style="height: 1.5rem" onchange="filter_status(this.value)">
+            <option value="all" selected>全部状态</option>
+            {% for k, v in status_types.items() %}
+                <option value="{{ k }}" {{ status == k and 'selected' or '' }}>{{ v }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    {# 现已用js实现 #}
+    {#        <input type="submit" value="筛选">#}
+    {% if role == 'admin' %}
+        <label for="f-username">
+            <input id="f-username" type="text" style="margin-left: 2em; width: 8rem" placeholder="筛选学号"
+                   oninput="filter_username(this.value)">
         </label>
-        {# 现已用js实现 #}
-{#        <input type="submit" value="筛选">#}
-        {% if role == 'admin' %}
-            <label for="filter_username">
-                <input id="f-username" type="text" style="margin-left: 2em" placeholder="筛选学号"
-                       oninput="filter_username(this.value)">
-            </label>
-        {% endif %}
-    </p>
-</form>
+    {% endif %}
+</p>
+{#</form>#}
 <form id="h-form" action="" method="post">
     {#<input type="hidden" name="_token" value="{{ csrf_token() }}">#}
     <input type="hidden" name="username" value="{{ username }}">
@@ -93,7 +100,7 @@
     </thead>
     <tbody>
     {% for item in items %}
-        <tr>
+        <tr class="show">
             {% if role == 'admin' %}
                 <td class="username">{{ item.username }}</td>
                 <td>{{ item.name }}</td>
@@ -153,13 +160,15 @@
         const status_text = status_types[status];
         let s = document.getElementsByClassName('status');
         for (let i = 0; i < s.length; i++) {
+            let parent = s[i].parentNode;
             if (status === 'all') {
-                s[i].parentNode.style.display = '';
+                parent.className = 'show';
             } else if (s[i].innerText.indexOf(status_text) === -1) {
-                s[i].parentNode.style.display = 'none';
+                parent.className = 'hide';
             } else {
-                s[i].parentNode.style.display = '';
+                parent.className = 'show';
             }
+
         }
     }
     {% if role == 'admin' %}
@@ -167,9 +176,9 @@
             let u = document.getElementsByClassName('username');
             for (let i = 0; i < u.length; i++) {
                 if (u[i].innerText.indexOf(username) === -1) {
-                    u[i].parentNode.style.display = 'none';
+                    u[i].parentNode.className = 'hide';
                 } else {
-                    u[i].parentNode.style.display = '';
+                    u[i].parentNode.className = 'show';
                 }
             }
         }
