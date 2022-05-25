@@ -5,6 +5,15 @@
     <meta content="width=device-width,user-scalable=no" name="viewport">
     <title>计划任务</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .day {
+            width: 3em;
+            height: 1.3em;
+            padding: 0 0 0 4px;
+            border: 1px solid #888;
+            border-radius: 2px;
+        }
+    </style>
 </head>
 <body>
 计划任务上传 | <a href="{{ url_for('history') }}">计划任务记录</a> | <a href="{{ url_for('account') }}">账户管理</a>
@@ -91,7 +100,7 @@
         <label>
             2022
             /
-            <select name="month" style="width: 3.5em">
+            <select id="month" name="month" style="width: 3.5em">
                 {% for m in month_list %}
                     <option id="month_{{ m }}" value="{{ m }}" {% if m == month %}selected{% endif %}>
                         {{ "%02d"|format(m) }}
@@ -99,9 +108,9 @@
                 {% endfor %}
             </select>
             /
-            <input id="day" type="number" name="day" value="{{ day }}"
+            <input id="day" type="number" name="day" value="{{ day }}" class="day"
                    oninput="this.value=this.value.replace(/\D/g,''); if (this.value > 31 || this.value.length > 2) {this.value = this.value.slice(0,this.value.length-1)} if (this.value < 0) {this.value = 1}"
-                   style="width: 3em;height: 1em;padding: 0 0 0 4px" required>
+                   required>
             -
             <select id="hour" name="hour" style="width: 3.5em">
                 {% for h in hour_list %}
@@ -197,18 +206,30 @@
     */
 
     function select_date(plan_id) {
+        let raw_month = document.getElementById("month").value * 1;
+        let raw_day = document.getElementById("day").value * 1;
+        let select_month;
+        let select_day;
         if (plan_id === 1) {
-            document.getElementById("month_" + today_month).selected = true;
-            document.getElementById("day").value = today_day;
+            select_month = today_month;
+            select_day = today_day;
         } else if (plan_id === 2) {
-            document.getElementById("month_" + tmr_month).selected = true;
-            document.getElementById("day").value = tmr_day;
+            select_month = tmr_month;
+            select_day = tmr_day;
         } else if (plan_id === 3) {
-            document.getElementById("month_" + da_tmr_month).selected = true;
-            document.getElementById("day").value = da_tmr_day;
+            select_month = da_tmr_month;
+            select_day = da_tmr_day;
         } else if (plan_id === 4) {
-            document.getElementById("month_" + tdfn_month).selected = true;
-            document.getElementById("day").value = tdfn_day;
+            select_month = tdfn_month;
+            select_day = tdfn_day;
+        }
+        if (raw_month !== select_month) {
+            blink_element(document.getElementById("month"));
+            document.getElementById("month_" + select_month).selected = true;
+        }
+        if (raw_day !== select_day) {
+            blink_element(document.getElementById("day"));
+            document.getElementById("day").value = select_day;
         }
     }
 
@@ -216,8 +237,10 @@
         let select_hour = document.getElementById("hour").value;
         if (plan_id === 1 && (select_hour < 7 || select_hour > 12)) {
             document.getElementById("hour_7").selected = true;
+            blink_element(document.getElementById("hour"));
         } else if (plan_id === 2 && select_hour < 15) {
             document.getElementById("hour_15").selected = true;
+            blink_element(document.getElementById("hour"));
         }
     }
 
@@ -235,6 +258,18 @@
             document.getElementById("img_transform_form").setAttribute("style", "");
             document.getElementById("img_watermark_form").setAttribute("style", "");
             document.getElementById("random_img_warning").style.opacity = "0";
+        }
+    }
+
+    function blink_element(element, i = 0) {
+        if (i < 1) {
+            element.style.backgroundColor = "#ff5";
+            setTimeout(function () {
+                element.style.backgroundColor = "";
+                setTimeout(function () {
+                    blink_element(element, i + 1);
+                }, 150);
+            }, 150);
         }
     }
 </script>
