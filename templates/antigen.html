@@ -162,7 +162,8 @@
         </label>
     </p>
     <p>
-        <input type="submit" value="提   交">
+        <input type="submit" value="提   交" onclick="this.style.opacity='0.4';this.style.pointerEvents='none';document.getElementById('submitting').style.display='';">
+        <span id="submitting" style="color: red;display: none;font-size: 0.8em;padding-left: 2em">提交中，请稍后……</span>
     </p>
 </form>
 </body>
