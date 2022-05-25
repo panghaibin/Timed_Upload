@@ -8,7 +8,7 @@
     <style>
         {% if role == 'admin' %}
             html, body {
-                max-width: 1050px;
+                max-width: 1100px;
             }
         {% endif %}
 
@@ -102,6 +102,7 @@
     {% for item in items %}
         <tr class="show">
             {% if role == 'admin' %}
+                <td>{{ item.id }}</td>
                 <td class="username">{{ item.username }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.upload_time }}</td>

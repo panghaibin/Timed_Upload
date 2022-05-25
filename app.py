@@ -311,6 +311,7 @@ def history():
             thead.insert(0, '学号')
             thead.insert(1, '姓名')
             thead.insert(2, '上传时间')
+            thead.insert(0, 'ID')
             if not filter_status:
                 query = 'select h.*, u.name from history h inner join users u on h.username = u.username' \
                         ' order by username asc, schedule_time desc'
