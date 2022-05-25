@@ -19,6 +19,12 @@
             display: none;
         }
 
+        .filter-select {
+            height: 1.5rem;
+            width: 6rem;
+            margin-left: 2rem;
+        }
+
         @media only screen and (max-width: 830px),
         (min-device-width: 830px) and (max-device-width: 830px) {
 
@@ -64,10 +70,10 @@
 <a href="{{ url_for('antigen') }}">计划任务上传</a> | 计划任务记录 | <a href="{{ url_for('account') }}">账户管理</a>
 <p>{{ username }}的计划任务记录</p>
 {#<form action="{{ url_for('history') }}" method="get">#}
-<p>
+<p id="filter">
     <button type="button" onclick="location.reload();">刷新列表</button>
-    <label style="margin-left: 2em">
-        <select id="status" name="status" style="height: 1.5rem" onchange="filter_status(this.value)">
+    <label>
+        <select id="status" name="status" class="filter-select" onchange="filter_status(this.value)">
             <option value="all" selected>全部状态</option>
             {% for k, v in status_types.items() %}
                 <option value="{{ k }}" {{ status == k and 'selected' or '' }}>{{ v }}</option>
@@ -76,12 +82,6 @@
     </label>
     {# 现已用js实现 #}
     {#        <input type="submit" value="筛选">#}
-    {% if role == 'admin' %}
-        <label for="f-username">
-            <input id="f-username" type="text" style="margin-left: 2em; width: 8rem" placeholder="筛选学号"
-                   oninput="filter_username(this.value)">
-        </label>
-    {% endif %}
 </p>
 {#</form>#}
 <form id="h-form" action="" method="post">
@@ -173,6 +173,28 @@
         }
     }
     {% if role == 'admin' %}
+        let select = document.createElement('select');
+        select.className = 'filter-select';
+        let option = document.createElement('option');
+        option.value = '';
+        option.innerText = '全部用户';
+        select.appendChild(option);
+        let u = document.getElementsByClassName('username');
+        let username_name_map = {};
+        for (let i = 0; i < u.length; i++) {
+            username_name_map[u[i].innerText] = u[i].nextElementSibling.innerText;
+        }
+        for (const username in username_name_map) {
+            let option = document.createElement('option');
+            option.value = username;
+            option.innerText = username_name_map[username];
+            select.appendChild(option);
+        }
+        select.onchange = function () {
+            filter_username(select.value)
+        };
+        document.getElementById('filter').appendChild(select);
+
         function filter_username(username) {
             let u = document.getElementsByClassName('username');
             for (let i = 0; i < u.length; i++) {
