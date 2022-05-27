@@ -272,7 +272,10 @@ def antigen_form():
             test_img_path = os.path.join(test_img_path, f'{str(int(time.time() * 1000))}.jpg')
             random_img_path = get_random_img(RANDOM_IMG_FOLDER)
             shutil.copy(random_img_path, test_img_path)
-            test_cps_path = img_proc(test_img_path, transform=True)
+            random_min = random.randint(0, 4)
+            t = test_date_time - timedelta(minutes=random_min)
+            watermark_img = f'{t.month}/{t.day} {t.hour}:%02d' % t.minute
+            test_cps_path = img_proc(test_img_path, transform=True, watermark=watermark_img)
             os.remove(test_img_path)
             test_img_path = ''
 
