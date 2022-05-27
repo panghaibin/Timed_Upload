@@ -1,4 +1,5 @@
 import os
+import random
 import time
 import sqlite3
 import logging
@@ -63,47 +64,50 @@ def get_user_config(username, config_names):
 
 
 def job():
+    time.sleep(random.randint(0, 10))
+    running = get_history(status='running')
+    if running:
+        return
     pending = get_history(status='pending')
-    running = []
-    for task in pending:
-        if task['schedule_time'] <= time.time():
-            running.append(task)
-            set_history(task['id'], 'running')
-            # 暂时先只一个任务
+    task = None
+    for t in pending:
+        if t['schedule_time'] <= time.time():
+            set_history(t['id'], 'running')
+            task = t
             break
-    for i, task in enumerate(running):
-        username = task['username']
-        type_ = task['test_type']
-        method = task['test_method']
-        times = task['test_times']
-        result = task['test_result']
-        img_path = os.path.join(abs_path, task['test_cps_path'])
-        rimg_name = task['test_rimg_name']
+    if not task:
+        return
 
-        user_info = get_user_info(username)
-        password = user_info['password']
-        name = user_info['name']
+    username = task['username']
+    type_ = task['test_type']
+    method = task['test_method']
+    times = task['test_times']
+    result = task['test_result']
+    img_path = os.path.join(abs_path, task['test_cps_path'])
+    rimg_name = task['test_rimg_name']
 
-        schedule_time = task['schedule_time']
-        schedule_time = datetime.fromtimestamp(schedule_time)
+    user_info = get_user_info(username)
+    password = user_info['password']
+    name = user_info['name']
 
-        try:
-            ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name, schedule_time)
-            status, result = ag.upload()
-        except Exception as e:
-            logging.exception(e)
-            now = get_time().strftime('%Y-%m-%d %H:%M:%S')
-            cron = schedule_time.strftime('%Y-%m-%d %H:%M')
-            status, result = 'error', f'{now}\n\n{username}运行时错误\n\n计划时间：{cron}\n\n{e}'
-        set_history(task['id'], status, time.time())
-        day = schedule_time.strftime('%m-%d')
-        title = f'{username[-4:]} {day}第{times}次{status_map[status]}'
-        user_config = get_user_config(username, ['api_type', 'api_key'])
-        if not user_config:
-            user_config = get_user_config('admin', ['api_type', 'api_key'])
-        api_type = int(user_config['api_type'])
-        api_key = user_config['api_key']
-        send_result = send_msg(title, result, api_type, api_key)
-        logging.info('消息发送成功') if send_result else logging.info('消息发送失败')
-        if i < len(running) - 1:
-            time.sleep(5 * 60)
+    schedule_time = task['schedule_time']
+    schedule_time = datetime.fromtimestamp(schedule_time)
+
+    try:
+        ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name, schedule_time)
+        status, result = ag.upload()
+    except Exception as e:
+        logging.exception(e)
+        now = get_time().strftime('%Y-%m-%d %H:%M:%S')
+        cron = schedule_time.strftime('%Y-%m-%d %H:%M')
+        status, result = 'error', f'{now}\n\n{username}运行时错误\n\n计划时间：{cron}\n\n{e}'
+    set_history(task['id'], status, time.time())
+    day = schedule_time.strftime('%m-%d')
+    title = f'{username[-4:]} {day}第{times}次{status_map[status]}'
+    user_config = get_user_config(username, ['api_type', 'api_key'])
+    if not user_config:
+        user_config = get_user_config('admin', ['api_type', 'api_key'])
+    api_type = int(user_config['api_type'])
+    api_key = user_config['api_key']
+    send_result = send_msg(title, result, api_type, api_key)
+    logging.info('消息发送成功') if send_result else logging.info('消息发送失败')
