@@ -63,7 +63,17 @@ def get_user_config(username, config_names):
     return config
 
 
-def job():
+def send_msg_to_user(username, title, desp):
+    user_config = get_user_config(username, ['api_type', 'api_key'])
+    if not user_config:
+        user_config = get_user_config('admin', ['api_type', 'api_key'])
+    api_type = int(user_config['api_type'])
+    api_key = user_config['api_key']
+    send_result = send_msg(title, desp, api_type, api_key)
+    return send_result
+
+
+def pending_job():
     time.sleep(random.randint(0, 10))
     running = get_history(status='running')
     if running:
@@ -104,10 +114,5 @@ def job():
     set_history(task['id'], status, time.time())
     day = schedule_time.strftime('%m-%d')
     title = f'{username[-4:]} {day}第{times}次{status_map[status]}'
-    user_config = get_user_config(username, ['api_type', 'api_key'])
-    if not user_config:
-        user_config = get_user_config('admin', ['api_type', 'api_key'])
-    api_type = int(user_config['api_type'])
-    api_key = user_config['api_key']
-    send_result = send_msg(title, result, api_type, api_key)
+    send_result = send_msg_to_user(username, title, result)
     logging.info('消息发送成功') if send_result else logging.info('消息发送失败')

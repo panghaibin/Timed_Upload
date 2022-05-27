@@ -18,7 +18,7 @@ class Config(object):
     JOBS = [
         {
             'id': 'job1',
-            'func': 'cron:job',
+            'func': 'cron:pending_job',
             'trigger': 'interval',
             'minutes': 3
         }
