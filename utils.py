@@ -27,6 +27,17 @@ status_map = {
     'uploaded': '已上传过',
     'deleted': '已删除',
     'error': '运行时错误',
+    'notice_err': '存在无法自动阅读的提示或问卷',
+}
+status_color_map = {
+    'pending': '#ffc107',
+    'running': '#ffc107',
+    'success': '#28a745',
+    'fail': '#dc3545',
+    'uploaded': '#007bff',
+    'deleted': '#6c757d',
+    'error': '#dc3545',
+    'notice_err': '#dc3545',
 }
 role_map = {
     0: 'user',
@@ -418,7 +429,12 @@ class AgUpload:
                 break
             elif '.aspx' in result.split('&#39;')[1]:
                 notice_url = 'https://selfreport.shu.edu.cn' + result.split('&#39;')[1]
-                self._read_notice(notice_url)
+                try:
+                    self._read_notice(notice_url)
+                except Exception as e:
+                    logging.exception(e)
+                    title += '阅读通知失败'
+                    return 'notice_err', title
             logging.info(result)
             result_split = result.split('F.alert')
             if len(result_split) > 1:

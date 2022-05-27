@@ -19,6 +19,10 @@
             display: none;
         }
 
+        .status {
+            max-width: 5rem;
+        }
+
         .filter-select {
             height: 1.5rem;
             width: 6rem;
@@ -27,6 +31,9 @@
 
         @media only screen and (max-width: 830px),
         (min-device-width: 830px) and (max-device-width: 830px) {
+            .status {
+                max-width: 999rem;
+            }
 
             table, thead, tbody, th, td, tr {
                 display: block;
@@ -95,7 +102,7 @@
     <thead>
     <tr>
         {% for th in thead %}
-            <th>{{ th }}</th>{% endfor %}
+            <th {{ th == '当前状态' and 'class="status"' or '' }} >{{ th }}</th>{% endfor %}
     </tr>
     </thead>
     <tbody>

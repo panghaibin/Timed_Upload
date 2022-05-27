@@ -9,7 +9,7 @@ from datetime import timedelta
 from contextlib import closing
 from flask_apscheduler import APScheduler
 from utils import abs_path, get_time, get_config, status_map, img_proc, get_img_str, get_random_img, config_path, \
-    role_map, datetime_from_str
+    role_map, datetime_from_str, status_color_map
 from flask import send_from_directory, render_template, make_response, redirect, url_for, Flask, Markup, request, g, \
     session
 
@@ -295,15 +295,6 @@ def history():
     username = session['username']
     if request.method == 'GET':
         thead = ['当前状态', '计划时间', '实际完成', '处理后图像', '原图', '次数', '类型', '方式', '结果', '操作', ]
-        status_color_map = {
-            'pending': '#ffc107',
-            'running': '#ffc107',
-            'success': '#28a745',
-            'fail': '#dc3545',
-            'uploaded': '#007bff',
-            'deleted': '#6c757d',
-            'error': '#dc3545',
-        }
         filter_status = request.args.get('status')
         filter_status = filter_status if filter_status in status_map.keys() else None
         role = session.get('role')
