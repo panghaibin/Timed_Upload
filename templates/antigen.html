@@ -162,7 +162,7 @@
         </label>
     </p>
     <p>
-        <input type="submit" value="提   交" onclick="this.style.opacity='0.4';this.style.pointerEvents='none';document.getElementById('submitting').style.display='';">
+        <input id="submit-btn" type="submit" value="提   交">
         <span id="submitting" style="color: red;display: none;font-size: 0.8em;padding-left: 2em">提交中，请稍后……</span>
     </p>
 </form>
@@ -260,6 +260,11 @@
             document.getElementById("img_watermark_form").setAttribute("style", "");
             document.getElementById("random_img_warning").style.opacity = "0";
         }
+    }
+
+    document.getElementById("h-form").onsubmit = function () {
+        document.getElementById("submit-btn").setAttribute("style", "opacity: 0.4; pointer-events: none;");
+        document.getElementById('submitting').style.display = '';
     }
 
     function blink_element(element, i = 0) {
