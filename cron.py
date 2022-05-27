@@ -70,24 +70,10 @@ def send_msg_to_user(username, title, desp):
     api_type = int(user_config['api_type'])
     api_key = user_config['api_key']
     send_result = send_msg(title, desp, api_type, api_key)
-    return send_result
+    logging.info('消息发送成功') if send_result else logging.info('消息发送失败')
 
 
-def pending_job():
-    time.sleep(random.randint(0, 10))
-    running = get_history(status='running')
-    if running:
-        return
-    pending = get_history(status='pending')
-    task = None
-    for t in pending:
-        if t['schedule_time'] <= time.time():
-            set_history(t['id'], 'running')
-            task = t
-            break
-    if not task:
-        return
-
+def run_task(task):
     username = task['username']
     type_ = task['test_type']
     method = task['test_method']
@@ -114,5 +100,54 @@ def pending_job():
     set_history(task['id'], status, time.time())
     day = schedule_time.strftime('%m-%d')
     title = f'{username[-4:]} {day}第{times}次{status_map[status]}'
-    send_result = send_msg_to_user(username, title, result)
-    logging.info('消息发送成功') if send_result else logging.info('消息发送失败')
+    return status, username, title, result
+
+
+def pending_run():
+    time.sleep(random.randint(0, 10))
+    running = get_history(status='running')
+    rerunning = get_history(status='rerunning')
+    if running or rerunning:
+        return
+
+    pending = get_history(status='pending')
+    task = None
+    for t in pending:
+        if t['schedule_time'] <= time.time():
+            set_history(t['id'], 'running')
+            task = t
+            break
+    if not task:
+        return
+
+    _, username, title, result = run_task(task)
+    send_msg_to_user(username, title, result)
+
+
+def notice_err_rerun():
+    time.sleep(random.randint(0, 10))
+    while True:
+        running = get_history(status='running')
+        rerunning = get_history(status='rerunning')
+        if running:
+            time.sleep(random.randint(0, 30))
+            continue
+        elif rerunning:
+            return
+        else:
+            break
+
+    err = get_history(status='notice_err')
+    task = None
+    for t in err:
+        if t['schedule_time'] <= time.time():
+            set_history(t['id'], 'rerunning')
+            task = t
+            break
+
+    if not task:
+        return
+
+    status, username, title, result = run_task(task)
+    if status != 'notice_err':
+        send_msg_to_user(username, title, result)

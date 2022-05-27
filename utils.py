@@ -28,6 +28,7 @@ status_map = {
     'deleted': '已删除',
     'error': '运行时错误',
     'notice_err': '存在无法自动阅读的提示或问卷',
+    'rerunning': '重新上传中',
 }
 status_color_map = {
     'pending': '#ffc107',
@@ -38,6 +39,7 @@ status_color_map = {
     'deleted': '#6c757d',
     'error': '#dc3545',
     'notice_err': '#dc3545',
+    'rerunning': '#ffc107',
 }
 role_map = {
     0: 'user',

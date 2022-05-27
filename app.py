@@ -18,10 +18,16 @@ class Config(object):
     JOBS = [
         {
             'id': 'job1',
-            'func': 'cron:pending_job',
+            'func': 'cron:pending_run',
             'trigger': 'interval',
             'minutes': 3
-        }
+        },
+        {
+            'id': 'job2',
+            'func': 'cron:notice_err_rerun',
+            'trigger': 'interval',
+            'minutes': 10
+        },
     ]
     SCHEDULER_API_ENABLED = True
 
