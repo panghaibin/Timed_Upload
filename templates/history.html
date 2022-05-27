@@ -126,9 +126,9 @@
             <td>{{ item.method }}</td>
             <td>{{ item.result }}</td>
             <td>
-                <a href="javascript:void(0)" onclick="del_history('{{ item.id }}')">删除</a>
-                |
                 <a href="javascript:void(0)" onclick="edit_history('{{ item.id }}')">编辑</a>
+                |
+                <a href="javascript:void(0)" onclick="del_history('{{ item.id }}')">删除</a>
             </td>
         </tr>
     {% endfor %}
