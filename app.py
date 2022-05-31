@@ -20,13 +20,13 @@ class Config(object):
             'id': 'job1',
             'func': 'cron:pending_run',
             'trigger': 'interval',
-            'minutes': 3
+            'seconds': 90
         },
         {
             'id': 'job2',
             'func': 'cron:notice_err_rerun',
             'trigger': 'interval',
-            'minutes': 10
+            'minutes': 5
         },
     ]
     SCHEDULER_API_ENABLED = True
