@@ -89,18 +89,24 @@ def run_task(task):
     schedule_time = task['schedule_time']
     schedule_time = datetime.fromtimestamp(schedule_time)
 
-    try:
-        ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name, schedule_time)
-        status, result = ag.upload()
-    except Exception as e:
-        logging.exception(e)
-        now = get_time().strftime('%Y-%m-%d %H:%M:%S')
-        cron = schedule_time.strftime('%Y-%m-%d %H:%M')
-        status, result = 'error', f'{now}\n\n{username}运行时错误\n\n计划时间：{cron}\n\n{e}'
-    set_history(task['id'], status, time.time())
-    day = schedule_time.strftime('%m-%d')
-    title = f'{username[-4:]} {day}第{times}次{status_map[status]}'
-    return status, username, title, result
+    retry_times = 3
+    for i in range(retry_times):
+        try:
+            ag = AgUpload(username, password, name, type_, method, times, result, img_path, rimg_name, schedule_time)
+            status, result = ag.upload()
+        except Exception as e:
+            logging.exception(e)
+            if i < retry_times - 1:
+                time.sleep(5)
+                continue
+            now = get_time().strftime('%Y-%m-%d %H:%M:%S')
+            cron = schedule_time.strftime('%Y-%m-%d %H:%M')
+            status, result = 'error', f'{now}\n\n{username}运行时错误\n\n计划时间：{cron}\n\n{e}'
+
+        set_history(task['id'], status, time.time())
+        day = schedule_time.strftime('%m-%d')
+        title = f'{username[-4:]} {day}第{times}次{status_map[status]}'
+        return status, username, title, result
 
 
 def pending_run():
